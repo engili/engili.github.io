@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://engili.github.io/blog/2018/03/24/uikit-animations-note/</loc>
+<lastmod>2018-03-24T21:33:06+08:00</lastmod>
+</url>
+<url>
 <loc>http://engili.github.io/blog/archives/</loc>
 </url>
 <url>
 <loc>http://engili.github.io/</loc>
+</url>
+<url>
+<loc>http://engili.github.io/blog/categories/ios/</loc>
+</url>
+<url>
+<loc>http://engili.github.io/blog/categories/animations/</loc>
 </url>
 </urlset>

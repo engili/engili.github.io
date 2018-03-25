@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Ios | Engili's Blog]]></title>
+  <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
+  <link href="http://engili.github.io/"/>
+  <updated>2018-03-25T16:03:03+08:00</updated>
+  <id>http://engili.github.io/</id>
+  <author>
+    <name><![CDATA[engili]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[UIKit Animations 学习笔记]]></title>
+    <link href="http://engili.github.io/blog/2018/03/24/uikit-animations-note/"/>
+    <updated>2018-03-24T21:33:06+08:00</updated>
+    <id>http://engili.github.io/blog/2018/03/24/uikit-animations-note</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h3>UIView 可动画属性 (Animatable Property)</h3>
+
+<ul>
+<li>frame
+
+<ul>
+<li>当<code>transform</code> 属性不为<code>identity</code>时，<code>frame</code>是未定义的，使用<code>bounds</code>或<code>center</code>做动画</li>
+</ul>
+</li>
+<li>bounds</li>
+<li>center</li>
+<li>transform</li>
+<li>alpha</li>
+<li>backgroundColor</li>
+<li><del>contentStretch</del> (iOS 7.0弃用）
+
+<ul>
+<li><del>Modify this property to change the way the view’s contents are stretched to fill the available space.</del></li>
+</ul>
+</li>
+</ul>
+
+
+<h5>注：改变某个正在进行的动画的属性的值，并不会打断动画，而是动画继续执行，并且最终态到你设置的那个值</h5>
+
+<h3>Animations Block-Based Methods</h3>
+
+<pre><code class="swift">class func animate(withDuration duration: TimeInterval, animations: @escaping () -&gt; Void)
+</code></pre>
+
+<ul>
+<li>这个方法使用<code>curveEaseInOut</code>和<code>transitionNone</code>选项，动画期间动画的View不响应用户交互</li>
+</ul>
+
+
+<pre><code class="swift">class func animate(withDuration duration: TimeInterval, animations: @escaping () -&gt; Void, completion: ((Bool) -&gt; Void)? = nil)
+</code></pre>
+
+<ul>
+<li><code>completion</code>,如果<code>duration</code>值是0，block会在下一个<code>runloop cycle</code>被调用</li>
+</ul>
+
+
+<pre><code class="swift">class func animate(withDuration duration: TimeInterval, delay: TimeInterval, options: UIViewAnimationOptions = [], animations: @escaping () -&gt; Void, completion: ((Bool) -&gt; Void)? = nil)
+</code></pre>
+
+<ul>
+<li><code>options</code> 可以设置一个或者多个，以数组的形式</li>
+</ul>
+
+
+<h4>UIViewAnimationOptions</h4>
+
+<h5>常规属性（可以设置多个）</h5>
+
+<ul>
+<li>layoutSubviews
+
+<ul>
+<li>layout子View，让他们随父view一起动画</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="swift 必须重写view的LayoutSubViews方法">//  MTAnimateView.swift
+class MTAnimateView: UIView {
+    var subview: UIView!
+    override func layoutSubviews() {
+        let bounds = self.bounds
+        subview.frame = CGRect(x: 0, y: 0, width: bounds.width / 2, height: bounds.height / 2)
+    }
+}
+
+//UIViewController.swift
+class ViewController: UIViewController {
+    var redView: MTAnimateView!
+    //动画block 扩大bounds，长宽各100，不带`layoutSubviews` 动画效果就很奇怪
+    func animateWithLayoutSubViews() {
+        let orginBounds = redView.bounds
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .layoutSubviews, animations: {
+            self.redView.bounds = CGRect(x: orginBounds.origin.x, y: orginBounds.origin.y, width: orginBounds.width + 100, height: orginBounds.height + 100)
+        }) { (_) in
+            self.redView.bounds = orginBounds
+        }
+    }
+
+}
+</code></pre>
+
+<ul>
+<li>allowUserInteraction
+
+<ul>
+<li>响应动画时的用户交互</li>
+</ul>
+</li>
+<li>beginFromCurrentState</li>
+<li>`repeat`</li>
+<li>autoreverse</li>
+<li>overrideInheritedDuration
+
+<ul>
+<li>忽略嵌套动画的时间,使用自己设置的<code>duration</code></li>
+</ul>
+</li>
+<li>overrideInheritedCurve
+
+<ul>
+<li>忽略嵌套动画的时间曲线，使用自己设置的时间曲线</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="swift 嵌套动画">    UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseIn, animations: {
+            self.redView.center = redViewNewCenter
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: [.curveEaseOut, .overrideInheritedDuration, .overrideInheritedCurve], animations: {
+                self.blueView.center = blueViewNewCenter
+            }, completion: { (_) in
+                self.blueView.center = blueViewOriginalCenter
+            })
+        }) { (_) in
+            self.redView.center = redViewOriginalCenter
+    }
+</code></pre>
+
+<ul>
+<li>allowAnimatedContent</li>
+<li>showHideTransitionViews</li>
+<li>overrideInheritedOptions</li>
+</ul>
+
+
+<h5>速度属性 （可以设置一个）</h5>
+
+<ul>
+<li>curveEaseInOut
+
+<ul>
+<li>开始慢，中间加速，结尾慢</li>
+</ul>
+</li>
+<li>curveEaseIn
+
+<ul>
+<li>开始慢，一直加速</li>
+</ul>
+</li>
+<li>curveEaseOut
+
+<ul>
+<li>开始快，一直减速</li>
+</ul>
+</li>
+<li>curveLinear
+
+<ul>
+<li>均匀的</li>
+</ul>
+</li>
+</ul>
+
+
+<h5>转场动画属性 （可以设置一个）</h5>
+
+<ul>
+<li>transitionFlipFromLeft</li>
+<li>transitionFlipFromRight</li>
+<li>transitionCurlUp</li>
+<li>transitionCurlDown</li>
+<li>transitionCrossDissolve</li>
+<li>transitionFlipFromTop</li>
+<li>transitionFlipFromBottom</li>
+<li>preferredFramesPerSecond30</li>
+<li>preferredFramesPerSecond60</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
