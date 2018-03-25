@@ -4,7 +4,7 @@
   <title><![CDATA[Engili's Blog]]></title>
   <link href="http://engili.github.io/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-25T17:23:27+08:00</updated>
+  <updated>2018-03-25T20:22:31+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -148,9 +148,21 @@
 <li>响应动画时的用户交互</li>
 </ul>
 </li>
-<li>beginFromCurrentState</li>
-<li>`repeat`</li>
-<li>autoreverse</li>
+<li><p>beginFromCurrentState</p>
+
+<blockquote><p>If this key is not present, all in-flight animations are allowed to finish before the new animation is started. If another animation is not in flight, this key has no effect.</p></blockquote></li>
+<li><p>`repeat`</p>
+
+<ul>
+<li>重复动画</li>
+</ul>
+</li>
+<li>autoreverse
+
+<ul>
+<li>与<code>repeat</code>配合使用，动画能回溯</li>
+</ul>
+</li>
 <li>overrideInheritedDuration
 
 <ul>
@@ -190,8 +202,24 @@
 
 
 <ul>
-<li>allowAnimatedContent</li>
-<li>showHideTransitionViews</li>
+<li>allowAnimatedContent
+
+<ul>
+<li>动画的时候，重绘View，没设置这个选项的时候，动画都是使用的截图</li>
+</ul>
+</li>
+<li>showHideTransitionViews
+
+<ul>
+<li>用于转场动画</li>
+</ul>
+</li>
+</ul>
+
+
+<blockquote><p>When present, this key causes views to be hidden or shown (instead of removed or added) when performing a view transition. Both views must already be present in the parent view’s hierarchy when using this key. If this key is not present, the to-view in a transition is added to, and the from-view is removed from, the parent view’s list of subviews.</p></blockquote>
+
+<ul>
 <li>overrideInheritedOptions</li>
 </ul>
 
@@ -238,6 +266,48 @@
 <li>transitionFlipFromBottom</li>
 <li>preferredFramesPerSecond30</li>
 <li>preferredFramesPerSecond60</li>
+</ul>
+
+
+<h4>嵌套动画</h4>
+
+<p>嵌套动画，是嵌套在其他动画block中的动画，他开始动画的时间和他父动画一样，并且继承父动画的时间，时间曲线和其他动画配置。
+可以通过<code>overrideInheritedDuration</code>、<code>overrideInheritedCurve</code> 来使用自己的配置做动画</p>
+
+<h4>转场动画 (动画效果比较浮夸，用的较少)</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="k">func</span> <span class="n">transition</span><span class="p">(</span><span class="n">with</span> <span class="nl">view</span><span class="p">:</span> <span class="bp">UIView</span><span class="p">,</span> <span class="nl">duration</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="n">UIViewAnimationOptions</span> <span class="o">=</span> <span class="p">[],</span> <span class="nl">animations</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="n">Void</span><span class="p">)</span><span class="o">?</span><span class="p">,</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">((</span><span class="n">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span><span class="p">)</span><span class="o">?</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>在<code>view</code>中进行转场动画</li>
+<li>在<code>animations</code>中可以add、remove、hide、show view，如果想要其他动画效果，需要配置<code>allowAnimatedContent</code></li>
+</ul>
+
+
+<figure class='code'><figcaption><span>示例</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="bp">UIView</span><span class="p">.</span><span class="n">transition</span><span class="p">(</span><span class="nl">with</span><span class="p">:</span> <span class="n">redView</span><span class="p">,</span> <span class="nl">duration</span><span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="p">.</span><span class="n">transitionFlipFromLeft</span><span class="p">,</span> <span class="nl">animations</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="nb">self</span><span class="p">.</span><span class="n">greenView</span><span class="p">.</span><span class="n">isHidden</span> <span class="o">=</span> <span class="nb">false</span>
+</span><span class='line'>            <span class="nb">self</span><span class="p">.</span><span class="n">blueView</span><span class="p">.</span><span class="n">isHidden</span> <span class="o">=</span> <span class="nb">true</span>
+</span><span class='line'>        <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="nb">nil</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="k">func</span> <span class="n">transition</span><span class="p">(</span><span class="n">from</span> <span class="nl">fromView</span><span class="p">:</span> <span class="bp">UIView</span><span class="p">,</span> <span class="n">to</span> <span class="nl">toView</span><span class="p">:</span> <span class="bp">UIView</span><span class="p">,</span> <span class="nl">duration</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="n">UIViewAnimationOptions</span> <span class="o">=</span> <span class="p">[],</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">((</span><span class="n">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span><span class="p">)</span><span class="o">?</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>这个方法，从<code>fromView</code>转场到<code>toView</code></li>
+<li>系统实现是直接从视图层级中移除，可以使用 <code>showHideTransitionViews</code> 只是显示和隐藏两个view</li>
 </ul>
 
 ]]></content>
