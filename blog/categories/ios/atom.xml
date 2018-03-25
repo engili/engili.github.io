@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Engili's Blog]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-25T20:22:31+08:00</updated>
+  <updated>2018-03-25T20:28:49+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -228,12 +228,12 @@ class ViewController: UIViewController {
 </ul>
 
 
-<h4>嵌套动画</h4>
+<h3>嵌套动画</h3>
 
 <p>嵌套动画，是嵌套在其他动画block中的动画，他开始动画的时间和他父动画一样，并且继承父动画的时间，时间曲线和其他动画配置。
 可以通过<code>overrideInheritedDuration</code>、<code>overrideInheritedCurve</code> 来使用自己的配置做动画</p>
 
-<h4>转场动画 (动画效果比较浮夸，用的较少)</h4>
+<h3>转场动画 (动画效果比较浮夸，用的较少)</h3>
 
 <pre><code class="swift">class func transition(with view: UIView, duration: TimeInterval, options: UIViewAnimationOptions = [], animations: (() -&gt; Void)?, completion: ((Bool) -&gt; Void)? = nil)
 </code></pre>

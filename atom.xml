@@ -4,7 +4,7 @@
   <title><![CDATA[Engili's Blog]]></title>
   <link href="http://engili.github.io/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-25T20:22:31+08:00</updated>
+  <updated>2018-03-25T20:28:49+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -269,12 +269,12 @@
 </ul>
 
 
-<h4>嵌套动画</h4>
+<h3>嵌套动画</h3>
 
 <p>嵌套动画，是嵌套在其他动画block中的动画，他开始动画的时间和他父动画一样，并且继承父动画的时间，时间曲线和其他动画配置。
 可以通过<code>overrideInheritedDuration</code>、<code>overrideInheritedCurve</code> 来使用自己的配置做动画</p>
 
-<h4>转场动画 (动画效果比较浮夸，用的较少)</h4>
+<h3>转场动画 (动画效果比较浮夸，用的较少)</h3>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="k">func</span> <span class="n">transition</span><span class="p">(</span><span class="n">with</span> <span class="nl">view</span><span class="p">:</span> <span class="bp">UIView</span><span class="p">,</span> <span class="nl">duration</span><span class="p">:</span> <span class="n">TimeInterval</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="n">UIViewAnimationOptions</span> <span class="o">=</span> <span class="p">[],</span> <span class="nl">animations</span><span class="p">:</span> <span class="p">(()</span> <span class="o">-&gt;</span> <span class="n">Void</span><span class="p">)</span><span class="o">?</span><span class="p">,</span> <span class="nl">completion</span><span class="p">:</span> <span class="p">((</span><span class="n">Bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Void</span><span class="p">)</span><span class="o">?</span> <span class="o">=</span> <span class="nb">nil</span><span class="p">)</span>
