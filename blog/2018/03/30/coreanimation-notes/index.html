@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>CoreAnimation Notes - Engili's Blog</title>
+  <meta name="author" content="engili">
+
+  
+  <meta name="description" content="CoreAnimation CoreAnimation将视图转换为位图，可以直接在GPU上操作，实现动画效果 CALayer (Model Object) Model Objcet
+主要管理位图数据信息，位图内容可以是View绘制也可以是设置的图片
+大多数Layer不进行绘制， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://engili.github.io/blog/2018/03/30/coreanimation-notes/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Engili's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Engili's Blog</a></h1>
+  
+    <h2>Stay hungry Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="engili.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">CoreAnimation Notes</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-03-30T22:47:33+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>10:47 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<h1>CoreAnimation</h1>
+
+<p><code>CoreAnimation</code>将视图转换为<code>位图</code>，可以直接在<code>GPU</code>上操作，实现动画效果</p>
+
+<h1>CALayer (Model Object)</h1>
+
+<ul>
+<li>Model Objcet</li>
+<li>主要管理<code>位图</code>数据信息，位图内容可以是View绘制也可以是设置的图片</li>
+<li>大多数Layer不进行绘制，只是将View的内容换成为位图</li>
+</ul>
+
+
+<h1>CALayer 坐标</h1>
+
+<h2>point-based 坐标系统</h2>
+
+<ul>
+<li>基于屏幕坐标系统，可以表示layer之间的关系</li>
+<li><code>bounds</code>和<code>position</code>属性</li>
+</ul>
+
+
+<h2>unit 坐标系统</h2>
+
+<ul>
+<li>和屏幕坐标系统无关</li>
+<li><code>anchorPoint</code>
+
+<ul>
+<li>默认值是（0.5.0.5） 取值范围 0 - 1</li>
+<li>影响<code>position</code>属性
+
+<ul>
+<li>当anchorPoint为（0，0）时，<code>position</code>在layer左上角</li>
+<li>当anchorPoint为（1，1）时，<code>position</code>在layer右下角</li>
+<li>当anchorPoint为（0.5，0.5）时，<code>position</code>在layer中心</li>
+</ul>
+</li>
+<li>影响旋转<code>transform</code>的中心点</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>Layer Trees</h1>
+
+<ul>
+<li>Objects in the model layer tree (or simply “layer tree”) are the ones your app interacts with the most. The objects in this tree are the model objects that store the target values for any animations. Whenever you change the property of a layer, you use one of these objects.</li>
+<li><p>Objects in the presentation tree contain the in-flight values for any running animations. Whereas the layer tree objects contain the target values for an animation, the objects in the presentation tree reflect the current values as they appear onscreen. You should never modify the objects in this tree. Instead, you use these objects to read current animation values, perhaps to create a new animation starting at those values.</p>
+
+<pre><code class="``">  func presentation() -&gt; Self?
+</code></pre>
+
+<p>   a copy of the presentation layer object that represents the state of the layer as it currently appears onscreen.
+   The sublayers, mask, and superlayer properties of the returned layer return the corresponding objects from the presentation tree</p></li>
+<li><p>Objects in the render tree perform the actual animations and are private to Core Animation.</p></li>
+</ul>
+
+
+<h1>Changing the Layer Class Used by UIView</h1>
+
+<ul>
+<li>override the layerClass method and return the class object you want to use instead.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="kr">override</span> <span class="k">class</span> <span class="k">var</span> <span class="nl">layerClass</span><span class="p">:</span> <span class="n">Swift</span><span class="p">.</span><span class="n">AnyClass</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kr">get</span> <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="bp">CAGradientLayer</span><span class="p">.</span><span class="nb">self</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>CALayer subclasses</h1>
+
+<ul>
+<li>CAEmitterLayer</li>
+</ul>
+
+
+<p>Used to implement a Core Animation–based particle emitter system. The emitter layer object controls the generation of the particles and their origin.</p>
+
+<ul>
+<li>CAGradientLayer</li>
+</ul>
+
+
+<p>Used to draw a color gradient that fills the shape of the layer (within the bounds of any rounded corners).</p>
+
+<ul>
+<li>CAMetalLayer</li>
+</ul>
+
+
+<p>Used to set up and vend drawable textures for rendering layer content using Metal.</p>
+
+<ul>
+<li>CAEAGLLayer/CAOpenGLLayer</li>
+</ul>
+
+
+<p>Used to set up the backing store and context for rendering layer content using OpenGL ES (iOS) or OpenGL (OS X).</p>
+
+<ul>
+<li>CAReplicatorLayer</li>
+</ul>
+
+
+<p>Used when you want to make copies of one or more sublayers automatically. The replicator makes the copies for you and uses the properties you specify to alter the appearance or attributes of the copies.</p>
+
+<ul>
+<li>CAScrollLayer</li>
+</ul>
+
+
+<p>Used to manage a large scrollable area composed of multiple sublayers.</p>
+
+<ul>
+<li>CAShapeLayer</li>
+</ul>
+
+
+<p>Used to draw a cubic Bezier spline. Shape layers are advantageous for drawing path-based shapes because they always result in a crisp path, as opposed to a path you draw into a layer’s backing store, which would not look as good when scaled. However, the crisp results do involve rendering the shape on the main thread and caching the results.</p>
+
+<ul>
+<li>CATextLayer</li>
+</ul>
+
+
+<p>Used to render a plain or attributed string of text.</p>
+
+<ul>
+<li>CATiledLayer</li>
+</ul>
+
+
+<p>Used to manage a large image that can be divided into smaller tiles and rendered individually with support for zooming in and out of the content.</p>
+
+<ul>
+<li>CATransformLayer</li>
+</ul>
+
+
+<p>Used to render a true 3D layer hierarchy, rather than the flattened layer hierarchy implemented by other layer classes.</p>
+
+<ul>
+<li>QCCompositionLayer</li>
+</ul>
+
+
+<p>Used to render a Quartz Composer composition. (OS X only)</p>
+
+<h1>设置Layer content</h1>
+
+<p>A layer’s content consists of a bitmap containing the visual data you want to display. You can provide the content for that bitmap in one of three ways:</p>
+
+<ul>
+<li>Assign an image object directly to the layer object’s contents property. (This technique is best for layer content that never, or rarely, changes.)</li>
+<li>Assign a delegate object to the layer and let the delegate draw the layer’s content. (This technique is best for layer content that might change periodically and can be provided by an external object, such as a view.)</li>
+<li>Define a layer subclass and override one of its drawing methods to provide the layer contents yourself.(This technique is appropriate if you have to create a custom layer subclass anyway or if you want to change the fundamental drawing behavior of the layer.)</li>
+</ul>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">engili</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-03-30T22:47:33+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2018</span></span> <span class='time'>10:47 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/animations/'>animations</a>, <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/03/24/uikit-animations-note/" title="Previous Post: UIKit Animations 学习笔记">&laquo; UIKit Animations 学习笔记</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2018/03/30/coreanimation-notes/">CoreAnimation Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2018/03/24/uikit-animations-note/">UIKit Animations 学习笔记</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/engili">@engili</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'engili',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - engili -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

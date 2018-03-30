@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Animations | Engili's Blog]]></title>
   <link href="http://engili.github.io/blog/categories/animations/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-30T22:43:14+08:00</updated>
+  <updated>2018-03-30T22:50:02+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -12,6 +12,180 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[CoreAnimation Notes]]></title>
+    <link href="http://engili.github.io/blog/2018/03/30/coreanimation-notes/"/>
+    <updated>2018-03-30T22:47:33+08:00</updated>
+    <id>http://engili.github.io/blog/2018/03/30/coreanimation-notes</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h1>CoreAnimation</h1>
+
+<p><code>CoreAnimation</code>将视图转换为<code>位图</code>，可以直接在<code>GPU</code>上操作，实现动画效果</p>
+
+<h1>CALayer (Model Object)</h1>
+
+<ul>
+<li>Model Objcet</li>
+<li>主要管理<code>位图</code>数据信息，位图内容可以是View绘制也可以是设置的图片</li>
+<li>大多数Layer不进行绘制，只是将View的内容换成为位图</li>
+</ul>
+
+
+<h1>CALayer 坐标</h1>
+
+<h2>point-based 坐标系统</h2>
+
+<ul>
+<li>基于屏幕坐标系统，可以表示layer之间的关系</li>
+<li><code>bounds</code>和<code>position</code>属性</li>
+</ul>
+
+
+<h2>unit 坐标系统</h2>
+
+<ul>
+<li>和屏幕坐标系统无关</li>
+<li><code>anchorPoint</code>
+
+<ul>
+<li>默认值是（0.5.0.5） 取值范围 0 - 1</li>
+<li>影响<code>position</code>属性
+
+<ul>
+<li>当anchorPoint为（0，0）时，<code>position</code>在layer左上角</li>
+<li>当anchorPoint为（1，1）时，<code>position</code>在layer右下角</li>
+<li>当anchorPoint为（0.5，0.5）时，<code>position</code>在layer中心</li>
+</ul>
+</li>
+<li>影响旋转<code>transform</code>的中心点</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>Layer Trees</h1>
+
+<ul>
+<li>Objects in the model layer tree (or simply “layer tree”) are the ones your app interacts with the most. The objects in this tree are the model objects that store the target values for any animations. Whenever you change the property of a layer, you use one of these objects.</li>
+<li><p>Objects in the presentation tree contain the in-flight values for any running animations. Whereas the layer tree objects contain the target values for an animation, the objects in the presentation tree reflect the current values as they appear onscreen. You should never modify the objects in this tree. Instead, you use these objects to read current animation values, perhaps to create a new animation starting at those values.</p>
+
+<pre><code class="``">  func presentation() -&gt; Self?
+</code></pre>
+
+<p>   a copy of the presentation layer object that represents the state of the layer as it currently appears onscreen.
+   The sublayers, mask, and superlayer properties of the returned layer return the corresponding objects from the presentation tree</p></li>
+<li><p>Objects in the render tree perform the actual animations and are private to Core Animation.</p></li>
+</ul>
+
+
+<h1>Changing the Layer Class Used by UIView</h1>
+
+<ul>
+<li>override the layerClass method and return the class object you want to use instead.
+<code>swift
+override class var layerClass: Swift.AnyClass {
+      get {
+          return CAGradientLayer.self
+      }
+  }
+</code></li>
+</ul>
+
+
+<h1>CALayer subclasses</h1>
+
+<ul>
+<li>CAEmitterLayer</li>
+</ul>
+
+
+<p>Used to implement a Core Animation–based particle emitter system. The emitter layer object controls the generation of the particles and their origin.</p>
+
+<ul>
+<li>CAGradientLayer</li>
+</ul>
+
+
+<p>Used to draw a color gradient that fills the shape of the layer (within the bounds of any rounded corners).</p>
+
+<ul>
+<li>CAMetalLayer</li>
+</ul>
+
+
+<p>Used to set up and vend drawable textures for rendering layer content using Metal.</p>
+
+<ul>
+<li>CAEAGLLayer/CAOpenGLLayer</li>
+</ul>
+
+
+<p>Used to set up the backing store and context for rendering layer content using OpenGL ES (iOS) or OpenGL (OS X).</p>
+
+<ul>
+<li>CAReplicatorLayer</li>
+</ul>
+
+
+<p>Used when you want to make copies of one or more sublayers automatically. The replicator makes the copies for you and uses the properties you specify to alter the appearance or attributes of the copies.</p>
+
+<ul>
+<li>CAScrollLayer</li>
+</ul>
+
+
+<p>Used to manage a large scrollable area composed of multiple sublayers.</p>
+
+<ul>
+<li>CAShapeLayer</li>
+</ul>
+
+
+<p>Used to draw a cubic Bezier spline. Shape layers are advantageous for drawing path-based shapes because they always result in a crisp path, as opposed to a path you draw into a layer’s backing store, which would not look as good when scaled. However, the crisp results do involve rendering the shape on the main thread and caching the results.</p>
+
+<ul>
+<li>CATextLayer</li>
+</ul>
+
+
+<p>Used to render a plain or attributed string of text.</p>
+
+<ul>
+<li>CATiledLayer</li>
+</ul>
+
+
+<p>Used to manage a large image that can be divided into smaller tiles and rendered individually with support for zooming in and out of the content.</p>
+
+<ul>
+<li>CATransformLayer</li>
+</ul>
+
+
+<p>Used to render a true 3D layer hierarchy, rather than the flattened layer hierarchy implemented by other layer classes.</p>
+
+<ul>
+<li>QCCompositionLayer</li>
+</ul>
+
+
+<p>Used to render a Quartz Composer composition. (OS X only)</p>
+
+<h1>设置Layer content</h1>
+
+<p>A layer’s content consists of a bitmap containing the visual data you want to display. You can provide the content for that bitmap in one of three ways:</p>
+
+<ul>
+<li>Assign an image object directly to the layer object’s contents property. (This technique is best for layer content that never, or rarely, changes.)</li>
+<li>Assign a delegate object to the layer and let the delegate draw the layer’s content. (This technique is best for layer content that might change periodically and can be provided by an external object, such as a view.)</li>
+<li>Define a layer subclass and override one of its drawing methods to provide the layer contents yourself.(This technique is appropriate if you have to create a custom layer subclass anyway or if you want to change the fundamental drawing behavior of the layer.)</li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[UIKit Animations 学习笔记]]></title>
