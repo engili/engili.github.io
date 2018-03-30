@@ -227,6 +227,23 @@ backgroundColor &hellip;">
 <li>重复动画</li>
 </ul>
 </li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="bp">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="nl">withDuration</span><span class="p">:</span> <span class="mf">0.5</span><span class="p">,</span> <span class="nl">delay</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="p">.</span><span class="n">repeat</span><span class="p">,</span> <span class="nl">animations</span><span class="p">:</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">//重复执行3次</span>
+</span><span class='line'>            <span class="bp">UIView</span><span class="p">.</span><span class="n">setAnimationRepeatCount</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">...</span>
+</span><span class='line'>        <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="nb">nil</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
 <li>autoreverse
 
 <ul>

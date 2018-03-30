@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Engili's Blog]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-25T20:28:49+08:00</updated>
+  <updated>2018-03-30T22:43:14+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -127,6 +127,17 @@ class ViewController: UIViewController {
 <li>重复动画</li>
 </ul>
 </li>
+</ul>
+
+
+<pre><code class="swift">    UIView.animate(withDuration: 0.5, delay: 0.0, options: .repeat, animations: {
+                //重复执行3次
+                UIView.setAnimationRepeatCount(3)
+                ...
+            }, completion: nil)
+</code></pre>
+
+<ul>
 <li>autoreverse
 
 <ul>
