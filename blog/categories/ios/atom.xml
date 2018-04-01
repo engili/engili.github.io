@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Engili's Blog]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-30T22:50:02+08:00</updated>
+  <updated>2018-04-01T20:40:46+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -12,6 +12,167 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Keyboards 学习笔记]]></title>
+    <link href="http://engili.github.io/blog/2018/04/01/keyboards-notes/"/>
+    <updated>2018-04-01T20:13:05+08:00</updated>
+    <id>http://engili.github.io/blog/2018/04/01/keyboards-notes</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h2>Notification</h2>
+
+<ul>
+<li>键盘显示(前/后)发送的通知
+
+<ul>
+<li>UIKeyboardWillShowNotification</li>
+<li>UIKeyboardDidShowNotification</li>
+</ul>
+</li>
+<li>键盘消失(前/后)发送的通知
+
+<ul>
+<li>UIKeyboardWillHideNotification</li>
+<li>UIKeyboardDidHideNotification</li>
+</ul>
+</li>
+<li>键盘frame改变（前/后）的通知
+
+<ul>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>键盘弹起通知顺序</h4>
+
+<ol>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardWillShowNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+<li>UIKeyboardDidShowNotification</li>
+</ol>
+
+
+<h4>键盘收起通知顺序</h4>
+
+<ol>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardWillHideNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+<li>UIKeyboardDidHideNotification</li>
+</ol>
+
+
+<h4>切换键盘通知顺序</h4>
+
+<ol>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardWillShowNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+<li>UIKeyboardDidShowNotification</li>
+</ol>
+
+
+<p>这些通知收到的duration 一般为0。</p>
+
+<h3>UserInfo</h3>
+
+<p>通知的notification object 为nil，通知信息都在<code>userInfo</code>中</p>
+
+<ul>
+<li>UIKeyboardAnimationCurveUserInfoKey
+
+<ul>
+<li>包含<code>NSNumber</code>包装的<code>UIViewAnimationCurve</code>，获取键盘动画的时间函数</li>
+<li>测试的时候，取到的值为7，不能转换成任何定义好的的时间函数（迷&hellip;）</li>
+</ul>
+</li>
+<li>UIKeyboardAnimationDurationUserInfoKey
+
+<ul>
+<li>包含<code>NSNumber</code>包装的<code>double</code>,获取键盘动画时间</li>
+</ul>
+</li>
+<li>UIKeyboardIsLocalUserInfoKey
+
+<ul>
+<li>包含<code>NSNumber</code>包装的<code>Bool</code>,获取当前键盘是不是App调起的，一般用于iPad等多窗口下的应用开发</li>
+</ul>
+</li>
+<li>UIKeyboardFrameBeginUserInfoKey
+
+<ul>
+<li>包含<code>NSValue</code>包装的<code>CGRect</code>，获取键盘开始的frame在屏幕坐标系下，frame值和设备方向有关</li>
+</ul>
+</li>
+<li>UIKeyboardFrameEndUserInfoKey
+
+<ul>
+<li>包含<code>NSValue</code>包装的<code>CGRect</code>，获取键盘结束的frame在屏幕坐标系下，frame值和设备方向有关</li>
+<li>一般使用这个key值对应frame的size</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>注：</h4>
+
+<ul>
+<li>只应该使用<code>UIKeyboardFrameBeginUserInfoKey</code>和<code>UIKeyboardFrameEndUserInfoKey</code>中的size信息，因为键盘在动画，orgign可能会随时改动。</li>
+<li>因为键盘的高度总会改变，一般应该使用<code>UIKeyboardFrameEndUserInfoKey</code>中的size信息
+
+<ul>
+<li>实际开发中，遇到过使用origin，在屏幕旋转成横屏，又旋转回竖屏的时候，拿到的origin就改变了的问题，所以一般还是使用size属性就好</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Demo</h3>
+
+<h4>实现一个位于底部的文本框，可以跟随键盘弹出和收起</h4>
+
+<h6>监听通知</h6>
+
+<pre><code class="swift 监听UIKeyboardWillShow 和 UIKeyboardWillHide ">fileprivate func registerNotification() {
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: NSNotification.Name.UIKeyboardWillShow, object: nil)
+    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: NSNotification.Name.UIKeyboardWillHide, object: nil)
+}
+</code></pre>
+
+<h5>UIKeyboardWillShow</h5>
+
+<pre><code class="swift UIKeyboardWillShow进行弹起，或者键盘高度改变动画">    @objc fileprivate func keyboardWillShow(_ notification : Notification) {
+        let duration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        if let endFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let height = endFrame.height
+            UIView.animate(withDuration: duration, delay: 0.0, options: [.beginFromCurrentState], animations: { [weak self] in
+                //到底部的约束为键盘高度
+                self?.bottomAlignConstraint.constant = height
+                self?.view.layoutIfNeeded()
+            }, completion: nil)
+        }
+    }
+</code></pre>
+
+<h4>UIKeyboardWillHide</h4>
+
+<pre><code class="swift 键盘收起动画">    @objc fileprivate func keyboardWillHide(_ notification : Notification) {
+        let duration = (notification.userInfo?[UIKeyboardAnimationDurationUserInfoKey] as? NSNumber)?.doubleValue ?? 0
+        UIView.animate(withDuration: duration, delay: 0.0, options: [.beginFromCurrentState], animations: { [weak self] in
+            //到底部的约束为0
+            self?.bottomAlignConstraint.constant = 0
+            self?.view.layoutIfNeeded()
+        }, completion: nil)
+    }
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CoreAnimation Notes]]></title>
@@ -69,22 +230,36 @@
 <h1>Layer Trees</h1>
 
 <ul>
-<li>Objects in the model layer tree (or simply “layer tree”) are the ones your app interacts with the most. The objects in this tree are the model objects that store the target values for any animations. Whenever you change the property of a layer, you use one of these objects.</li>
-<li><p>Objects in the presentation tree contain the in-flight values for any running animations. Whereas the layer tree objects contain the target values for an animation, the objects in the presentation tree reflect the current values as they appear onscreen. You should never modify the objects in this tree. Instead, you use these objects to read current animation values, perhaps to create a new animation starting at those values.</p>
+<li>layer tree
 
-<pre><code class="``">  func presentation() -&gt; Self?
-</code></pre>
+<ul>
+<li>layer Model对象，管理位图数据</li>
+</ul>
+</li>
+<li><p>presentation tree</p>
 
-<p>   a copy of the presentation layer object that represents the state of the layer as it currently appears onscreen.
-   The sublayers, mask, and superlayer properties of the returned layer return the corresponding objects from the presentation tree</p></li>
-<li><p>Objects in the render tree perform the actual animations and are private to Core Animation.</p></li>
+<ul>
+<li>当动画正在进行的时候，可以通过<code>presentation tree</code> 获取当前状态的值</li>
 </ul>
 
 
-<h1>Changing the Layer Class Used by UIView</h1>
+<pre><code class="``swift">  func presentation() -&gt; Self?
+</code></pre>
+
+<p>  这个方法，返回 屏幕上正在动画，当前状态下的layer。这个layer对象的sublayers, mask, and superlayer 属性得到的对象都是在<code>presentation tree</code>上</p></li>
+<li><p>render tree</p>
 
 <ul>
-<li>override the layerClass method and return the class object you want to use instead.
+<li>执行实际的动画layer，私有类</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>改变UIView底层对应的Layer</h1>
+
+<ul>
+<li>重写<code>layerClass</code>方法即可
 <code>swift
 override class var layerClass: Swift.AnyClass {
       get {

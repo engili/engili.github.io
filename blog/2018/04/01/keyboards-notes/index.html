@@ -1,0 +1,393 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Keyboards 学习笔记 - Engili's Blog</title>
+  <meta name="author" content="engili">
+
+  
+  <meta name="description" content="Notification 键盘显示(前/后)发送的通知 UIKeyboardWillShowNotification
+UIKeyboardDidShowNotification 键盘消失(前/后)发送的通知 UIKeyboardWillHideNotification &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://engili.github.io/blog/2018/04/01/keyboards-notes/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Engili's Blog" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Engili's Blog</a></h1>
+  
+    <h2>Stay hungry Stay foolish.</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="engili.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Keyboards 学习笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2018-04-01T20:13:05+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2018</span></span> <span class='time'>8:13 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!-- more -->
+
+
+<h2>Notification</h2>
+
+<ul>
+<li>键盘显示(前/后)发送的通知
+
+<ul>
+<li>UIKeyboardWillShowNotification</li>
+<li>UIKeyboardDidShowNotification</li>
+</ul>
+</li>
+<li>键盘消失(前/后)发送的通知
+
+<ul>
+<li>UIKeyboardWillHideNotification</li>
+<li>UIKeyboardDidHideNotification</li>
+</ul>
+</li>
+<li>键盘frame改变（前/后）的通知
+
+<ul>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>键盘弹起通知顺序</h4>
+
+<ol>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardWillShowNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+<li>UIKeyboardDidShowNotification</li>
+</ol>
+
+
+<h4>键盘收起通知顺序</h4>
+
+<ol>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardWillHideNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+<li>UIKeyboardDidHideNotification</li>
+</ol>
+
+
+<h4>切换键盘通知顺序</h4>
+
+<ol>
+<li>UIKeyboardWillChangeFrameNotification</li>
+<li>UIKeyboardWillShowNotification</li>
+<li>UIKeyboardDidChangeFrameNotification</li>
+<li>UIKeyboardDidShowNotification</li>
+</ol>
+
+
+<p>这些通知收到的duration 一般为0。</p>
+
+<h3>UserInfo</h3>
+
+<p>通知的notification object 为nil，通知信息都在<code>userInfo</code>中</p>
+
+<ul>
+<li>UIKeyboardAnimationCurveUserInfoKey
+
+<ul>
+<li>包含<code>NSNumber</code>包装的<code>UIViewAnimationCurve</code>，获取键盘动画的时间函数</li>
+<li>测试的时候，取到的值为7，不能转换成任何定义好的的时间函数（迷&hellip;）</li>
+</ul>
+</li>
+<li>UIKeyboardAnimationDurationUserInfoKey
+
+<ul>
+<li>包含<code>NSNumber</code>包装的<code>double</code>,获取键盘动画时间</li>
+</ul>
+</li>
+<li>UIKeyboardIsLocalUserInfoKey
+
+<ul>
+<li>包含<code>NSNumber</code>包装的<code>Bool</code>,获取当前键盘是不是App调起的，一般用于iPad等多窗口下的应用开发</li>
+</ul>
+</li>
+<li>UIKeyboardFrameBeginUserInfoKey
+
+<ul>
+<li>包含<code>NSValue</code>包装的<code>CGRect</code>，获取键盘开始的frame在屏幕坐标系下，frame值和设备方向有关</li>
+</ul>
+</li>
+<li>UIKeyboardFrameEndUserInfoKey
+
+<ul>
+<li>包含<code>NSValue</code>包装的<code>CGRect</code>，获取键盘结束的frame在屏幕坐标系下，frame值和设备方向有关</li>
+<li>一般使用这个key值对应frame的size</li>
+</ul>
+</li>
+</ul>
+
+
+<h4>注：</h4>
+
+<ul>
+<li>只应该使用<code>UIKeyboardFrameBeginUserInfoKey</code>和<code>UIKeyboardFrameEndUserInfoKey</code>中的size信息，因为键盘在动画，orgign可能会随时改动。</li>
+<li>因为键盘的高度总会改变，一般应该使用<code>UIKeyboardFrameEndUserInfoKey</code>中的size信息
+
+<ul>
+<li>实际开发中，遇到过使用origin，在屏幕旋转成横屏，又旋转回竖屏的时候，拿到的origin就改变了的问题，所以一般还是使用size属性就好</li>
+</ul>
+</li>
+</ul>
+
+
+<h3>Demo</h3>
+
+<h4>实现一个位于底部的文本框，可以跟随键盘弹出和收起</h4>
+
+<h6>监听通知</h6>
+
+<figure class='code'><figcaption><span>监听UIKeyboardWillShow 和 UIKeyboardWillHide </span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="n">fileprivate</span> <span class="k">func</span> <span class="nf">registerNotification</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NotificationCenter</span><span class="p">.</span><span class="k">default</span><span class="p">.</span><span class="n">addObserver</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="nl">selector</span><span class="p">:</span> <span class="err">#</span><span class="n">selector</span><span class="p">(</span><span class="n">keyboardWillShow</span><span class="p">(</span><span class="nl">_</span><span class="p">:)),</span> <span class="nl">name</span><span class="p">:</span> <span class="bp">NSNotification</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">UIKeyboardWillShow</span><span class="p">,</span> <span class="nl">object</span><span class="p">:</span> <span class="nb">nil</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">NotificationCenter</span><span class="p">.</span><span class="k">default</span><span class="p">.</span><span class="n">addObserver</span><span class="p">(</span><span class="nb">self</span><span class="p">,</span> <span class="nl">selector</span><span class="p">:</span> <span class="err">#</span><span class="n">selector</span><span class="p">(</span><span class="n">keyboardWillHide</span><span class="p">(</span><span class="nl">_</span><span class="p">:)),</span> <span class="nl">name</span><span class="p">:</span> <span class="bp">NSNotification</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">UIKeyboardWillHide</span><span class="p">,</span> <span class="nl">object</span><span class="p">:</span> <span class="nb">nil</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>UIKeyboardWillShow</h5>
+
+<figure class='code'><figcaption><span>UIKeyboardWillShow进行弹起，或者键盘高度改变动画</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="p">@</span><span class="n">objc</span> <span class="n">fileprivate</span> <span class="k">func</span> <span class="n">keyboardWillShow</span><span class="p">(</span><span class="n">_</span> <span class="nl">notification</span> <span class="p">:</span> <span class="n">Notification</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span><span class="o">?</span><span class="p">[</span><span class="n">UIKeyboardAnimationDurationUserInfoKey</span><span class="p">]</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">NSNumber</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">doubleValue</span> <span class="o">??</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="k">if</span> <span class="k">let</span> <span class="n">endFrame</span> <span class="o">=</span> <span class="p">(</span><span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span><span class="o">?</span><span class="p">[</span><span class="n">UIKeyboardFrameEndUserInfoKey</span><span class="p">]</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">NSValue</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">cgRectValue</span> <span class="p">{</span>
+</span><span class='line'>        <span class="k">let</span> <span class="n">height</span> <span class="o">=</span> <span class="n">endFrame</span><span class="p">.</span><span class="n">height</span>
+</span><span class='line'>        <span class="bp">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="nl">withDuration</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span> <span class="nl">delay</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="p">[.</span><span class="n">beginFromCurrentState</span><span class="p">],</span> <span class="nl">animations</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="nb">self</span><span class="p">]</span> <span class="k">in</span>
+</span><span class='line'>            <span class="c1">//到底部的约束为键盘高度</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">?</span><span class="p">.</span><span class="n">bottomAlignConstraint</span><span class="p">.</span><span class="n">constant</span> <span class="o">=</span> <span class="n">height</span>
+</span><span class='line'>            <span class="nb">self</span><span class="o">?</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">layoutIfNeeded</span><span class="p">()</span>
+</span><span class='line'>        <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="nb">nil</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>UIKeyboardWillHide</h4>
+
+<figure class='code'><figcaption><span>键盘收起动画</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="p">@</span><span class="n">objc</span> <span class="n">fileprivate</span> <span class="k">func</span> <span class="n">keyboardWillHide</span><span class="p">(</span><span class="n">_</span> <span class="nl">notification</span> <span class="p">:</span> <span class="n">Notification</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">let</span> <span class="n">duration</span> <span class="o">=</span> <span class="p">(</span><span class="n">notification</span><span class="p">.</span><span class="n">userInfo</span><span class="o">?</span><span class="p">[</span><span class="n">UIKeyboardAnimationDurationUserInfoKey</span><span class="p">]</span> <span class="kt">as</span><span class="o">?</span> <span class="bp">NSNumber</span><span class="p">)</span><span class="o">?</span><span class="p">.</span><span class="n">doubleValue</span> <span class="o">??</span> <span class="mi">0</span>
+</span><span class='line'>    <span class="bp">UIView</span><span class="p">.</span><span class="n">animate</span><span class="p">(</span><span class="nl">withDuration</span><span class="p">:</span> <span class="n">duration</span><span class="p">,</span> <span class="nl">delay</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="nl">options</span><span class="p">:</span> <span class="p">[.</span><span class="n">beginFromCurrentState</span><span class="p">],</span> <span class="nl">animations</span><span class="p">:</span> <span class="p">{</span> <span class="p">[</span><span class="k">weak</span> <span class="nb">self</span><span class="p">]</span> <span class="k">in</span>
+</span><span class='line'>        <span class="c1">//到底部的约束为0</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">?</span><span class="p">.</span><span class="n">bottomAlignConstraint</span><span class="p">.</span><span class="n">constant</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">?</span><span class="p">.</span><span class="n">view</span><span class="p">.</span><span class="n">layoutIfNeeded</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">},</span> <span class="nl">completion</span><span class="p">:</span> <span class="nb">nil</span><span class="p">)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">engili</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2018-04-01T20:13:05+08:00'><span class='date'><span class='date-month'>Apr</span> <span class='date-day'>1</span><span class='date-suffix'>st</span>, <span class='date-year'>2018</span></span> <span class='time'>8:13 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2018/03/30/coreanimation-notes/" title="Previous Post: CoreAnimation Notes">&laquo; CoreAnimation Notes</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2018/04/01/keyboards-notes/">Keyboards 学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2018/03/30/coreanimation-notes/">CoreAnimation Notes</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2018/03/24/uikit-animations-note/">UIKit Animations 学习笔记</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/engili">@engili</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'engili',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - engili -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

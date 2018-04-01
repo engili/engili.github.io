@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Animations | Engili's Blog]]></title>
   <link href="http://engili.github.io/blog/categories/animations/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-03-30T22:50:02+08:00</updated>
+  <updated>2018-04-01T20:40:46+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[engili]]></name>
@@ -69,22 +69,36 @@
 <h1>Layer Trees</h1>
 
 <ul>
-<li>Objects in the model layer tree (or simply “layer tree”) are the ones your app interacts with the most. The objects in this tree are the model objects that store the target values for any animations. Whenever you change the property of a layer, you use one of these objects.</li>
-<li><p>Objects in the presentation tree contain the in-flight values for any running animations. Whereas the layer tree objects contain the target values for an animation, the objects in the presentation tree reflect the current values as they appear onscreen. You should never modify the objects in this tree. Instead, you use these objects to read current animation values, perhaps to create a new animation starting at those values.</p>
+<li>layer tree
 
-<pre><code class="``">  func presentation() -&gt; Self?
-</code></pre>
+<ul>
+<li>layer Model对象，管理位图数据</li>
+</ul>
+</li>
+<li><p>presentation tree</p>
 
-<p>   a copy of the presentation layer object that represents the state of the layer as it currently appears onscreen.
-   The sublayers, mask, and superlayer properties of the returned layer return the corresponding objects from the presentation tree</p></li>
-<li><p>Objects in the render tree perform the actual animations and are private to Core Animation.</p></li>
+<ul>
+<li>当动画正在进行的时候，可以通过<code>presentation tree</code> 获取当前状态的值</li>
 </ul>
 
 
-<h1>Changing the Layer Class Used by UIView</h1>
+<pre><code class="``swift">  func presentation() -&gt; Self?
+</code></pre>
+
+<p>  这个方法，返回 屏幕上正在动画，当前状态下的layer。这个layer对象的sublayers, mask, and superlayer 属性得到的对象都是在<code>presentation tree</code>上</p></li>
+<li><p>render tree</p>
 
 <ul>
-<li>override the layerClass method and return the class object you want to use instead.
+<li>执行实际的动画layer，私有类</li>
+</ul>
+</li>
+</ul>
+
+
+<h1>改变UIView底层对应的Layer</h1>
+
+<ul>
+<li>重写<code>layerClass</code>方法即可
 <code>swift
 override class var layerClass: Swift.AnyClass {
       get {
