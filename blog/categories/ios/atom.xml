@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Ios | Engili's Blog]]></title>
+  <title><![CDATA[Category: Ios | Lmt的博客]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-04-07T18:08:15+08:00</updated>
+  <updated>2018-04-07T23:10:04+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
-    <name><![CDATA[engili]]></name>
+    <name><![CDATA[limengtian]]></name>
     
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
@@ -75,18 +75,22 @@
 <li>layer Model对象，管理位图数据</li>
 </ul>
 </li>
-<li><p>presentation tree</p>
+<li>presentation tree
 
 <ul>
 <li>当动画正在进行的时候，可以通过<code>presentation tree</code> 获取当前状态的值</li>
 </ul>
+</li>
+</ul>
 
 
-<pre><code class="``swift">  func presentation() -&gt; Self?
+<pre><code class="swift">func presentation() -&gt; Self?
 </code></pre>
 
-<p>  这个方法，返回 屏幕上正在动画，当前状态下的layer。这个layer对象的sublayers, mask, and superlayer 属性得到的对象都是在<code>presentation tree</code>上</p></li>
-<li><p>render tree</p>
+<p>这个方法，返回 屏幕上正在动画，当前状态下的layer。这个layer对象的sublayers, mask, and superlayer 属性得到的对象都是在<code>presentation tree</code>上</p>
+
+<ul>
+<li>render tree
 
 <ul>
 <li>执行实际的动画layer，私有类</li>
@@ -156,10 +160,9 @@ Used to implement a Core Animation–based particle emitter system. The emitter 
 </ul>
 
 
-<p> 创建一个渐变色Layer</p>
+<p>创建一个渐变色Layer</p>
 
-<pre><code class="` swift "> class MTGradientView: UIView {
-
+<pre><code class="swift"> class MTGradientView: UIView {
     override class var layerClass: Swift.AnyClass  {
         return CAGradientLayer.self
     }
@@ -175,6 +178,7 @@ Used to implement a Core Animation–based particle emitter system. The emitter 
         gradientLayer?.startPoint = .zero
         gradientLayer?.endPoint = CGPoint(x: 1, y: 1)
     }
+
  }
 </code></pre>
 
@@ -239,17 +243,17 @@ Used to render a Quartz Composer composition. (OS X only)
 
 <ul>
 <li>当layer被标记为content需要reload是，例如在<code>setNeedsDisplay</code> 后会调用到该方法</li>
-<li>在该方法中，一般通过设置layer的contens属性</li>
-</ul>
-
-
-<pre><code class="`` swift "> func display(_ layer: CALayer) {
-     if let image = self.loadImageFromBundle() {
-         layer.bounds = CGRect(x: 0, y: 0, width: image.width, height: image.height)
-         layer.contents = image
-     }
+<li>在该方法中，一般通过设置layer的contens属性
+<code>swift
+func display(_ layer: CALayer) {
+ if let image = self.loadImageFromBundle() {
+     layer.bounds = CGRect(x: 0, y: 0, width: image.width, height: image.height)
+     layer.contents = image
  }
-</code></pre></li>
+}
+</code></li>
+</ul>
+</li>
 <li><code>func draw(_ layer: CALayer, in ctx: CGContext)</code>
 
 <ul>
@@ -266,7 +270,7 @@ Used to render a Quartz Composer composition. (OS X only)
 </ul>
 
 
-<pre><code>func draw(_ layer: CALayer, in ctx: CGContext) {
+<pre><code class="swift">func draw(_ layer: CALayer, in ctx: CGContext) {
     let path = CGMutablePath()
 
     path.move(to: .zero)

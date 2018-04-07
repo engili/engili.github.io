@@ -5,8 +5,8 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>CALayer 学习笔记 - Engili's Blog</title>
-  <meta name="author" content="engili">
+  <title>CALayer 学习笔记 - Lmt的博客</title>
+  <meta name="author" content="limengtian">
 
   
   <meta name="description" content="CoreAnimation CoreAnimation将视图转换为位图，可以直接在GPU上操作，实现动画效果 CALayer (Model Object) CALayer是Model Objcet
@@ -23,7 +23,7 @@
   <link rel="canonical" href="http://engili.github.io/blog/2018/04/05/calayer-notes/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="Engili's Blog" type="application/atom+xml">
+  <link href="/atom.xml" rel="alternate" title="Lmt的博客" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
   <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
@@ -38,9 +38,9 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">Engili's Blog</a></h1>
+  <h1><a href="/">Lmt的博客</a></h1>
   
-    <h2>Stay hungry Stay foolish.</h2>
+    <h2>O__O "….</h2>
   
 </hgroup>
 
@@ -58,8 +58,9 @@
 </form>
   
 <ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/">技术博客</a></li>
+  <li><a href="/blog/archives">博客归档</a></li>
+  <li><a href="/essay">随笔</a></li>
 </ul>
 
 </nav>
@@ -143,18 +144,24 @@
 <li>layer Model对象，管理位图数据</li>
 </ul>
 </li>
-<li><p>presentation tree</p>
+<li>presentation tree
 
 <ul>
 <li>当动画正在进行的时候，可以通过<code>presentation tree</code> 获取当前状态的值</li>
 </ul>
+</li>
+</ul>
 
 
-<pre><code class="``swift">  func presentation() -&gt; Self?
-</code></pre>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">func</span> <span class="n">presentation</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Self</span><span class="o">?</span>
+</span></code></pre></td></tr></table></div></figure>
 
-<p>  这个方法，返回 屏幕上正在动画，当前状态下的layer。这个layer对象的sublayers, mask, and superlayer 属性得到的对象都是在<code>presentation tree</code>上</p></li>
-<li><p>render tree</p>
+
+<p>这个方法，返回 屏幕上正在动画，当前状态下的layer。这个layer对象的sublayers, mask, and superlayer 属性得到的对象都是在<code>presentation tree</code>上</p>
+
+<ul>
+<li>render tree
 
 <ul>
 <li>执行实际的动画layer，私有类</li>
@@ -230,27 +237,48 @@ Used to implement a Core Animation–based particle emitter system. The emitter 
 </ul>
 
 
-<p> 创建一个渐变色Layer</p>
+<p>创建一个渐变色Layer</p>
 
-<pre><code class="` swift "> class MTGradientView: UIView {
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'> <span class="k">class</span> <span class="nl">MTGradientView</span><span class="p">:</span> <span class="bp">UIView</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kr">override</span> <span class="k">class</span> <span class="k">var</span> <span class="nl">layerClass</span><span class="p">:</span> <span class="n">Swift</span><span class="p">.</span><span class="n">AnyClass</span>  <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">CAGradientLayer</span><span class="p">.</span><span class="nb">self</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kr">override</span> <span class="k">init</span><span class="p">(</span><span class="nl">frame</span><span class="p">:</span> <span class="bp">CGRect</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="nb">super</span><span class="p">.</span><span class="k">init</span><span class="p">(</span><span class="nl">frame</span><span class="p">:</span> <span class="n">frame</span><span class="p">)</span>
+</span><span class='line'>        <span class="nb">self</span><span class="p">.</span><span class="n">setupLayer</span><span class="p">()</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">fileprivate</span> <span class="k">func</span> <span class="n">setupLayer</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">gradientLayer</span><span class="o">?</span><span class="p">.</span><span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UIColor</span><span class="p">.</span><span class="n">red</span><span class="p">.</span><span class="n">cgColor</span><span class="p">,</span> <span class="bp">UIColor</span><span class="p">.</span><span class="n">yellow</span><span class="p">.</span><span class="n">cgColor</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">gradientLayer</span><span class="o">?</span><span class="p">.</span><span class="n">locations</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>        <span class="n">gradientLayer</span><span class="o">?</span><span class="p">.</span><span class="n">startPoint</span> <span class="o">=</span> <span class="p">.</span><span class="n">zero</span>
+</span><span class='line'>        <span class="n">gradientLayer</span><span class="o">?</span><span class="p">.</span><span class="n">endPoint</span> <span class="o">=</span> <span class="bp">CGPoint</span><span class="p">(</span><span class="nl">x</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nl">y</span><span class="p">:</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
 
-    override class var layerClass: Swift.AnyClass  {
-        return CAGradientLayer.self
-    }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        self.setupLayer()
-    }
 
-    fileprivate func setupLayer() {
-        gradientLayer?.colors = [UIColor.red.cgColor, UIColor.yellow.cgColor]
-        gradientLayer?.locations = [0.5,1]
-        gradientLayer?.startPoint = .zero
-        gradientLayer?.endPoint = CGPoint(x: 1, y: 1)
-    }
- }
-</code></pre>
 
 <!--
 - CAMetalLayer
@@ -315,15 +343,26 @@ Used to render a Quartz Composer composition. (OS X only)
 <li>当layer被标记为content需要reload是，例如在<code>setNeedsDisplay</code> 后会调用到该方法</li>
 <li>在该方法中，一般通过设置layer的contens属性</li>
 </ul>
+</li>
+</ul>
 
 
-<pre><code class="`` swift "> func display(_ layer: CALayer) {
-     if let image = self.loadImageFromBundle() {
-         layer.bounds = CGRect(x: 0, y: 0, width: image.width, height: image.height)
-         layer.contents = image
-     }
- }
-</code></pre></li>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'>   <span class="k">func</span> <span class="nf">display</span><span class="p">(</span><span class="n">_</span> <span class="nl">layer</span><span class="p">:</span> <span class="bp">CALayer</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>       <span class="k">if</span> <span class="k">let</span> <span class="n">image</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">loadImageFromBundle</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>           <span class="n">layer</span><span class="p">.</span><span class="n">bounds</span> <span class="o">=</span> <span class="bp">CGRect</span><span class="p">(</span><span class="nl">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nl">y</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nl">width</span><span class="p">:</span> <span class="n">image</span><span class="p">.</span><span class="n">width</span><span class="p">,</span> <span class="nl">height</span><span class="p">:</span> <span class="n">image</span><span class="p">.</span><span class="n">height</span><span class="p">)</span>
+</span><span class='line'>           <span class="n">layer</span><span class="p">.</span><span class="n">contents</span> <span class="o">=</span> <span class="n">image</span>
+</span><span class='line'>       <span class="p">}</span>
+</span><span class='line'>   <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
 <li><code>func draw(_ layer: CALayer, in ctx: CGContext)</code>
 
 <ul>
@@ -480,7 +519,7 @@ Used to render a Quartz Composer composition. (OS X only)
       
   
 
-<span class="byline author vcard">Posted by <span class="fn">engili</span></span>
+<span class="byline author vcard">Posted by <span class="fn">limengtian</span></span>
 
       
 
@@ -578,7 +617,7 @@ Used to render a Quartz Composer composition. (OS X only)
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2018 - engili -
+  Copyright &copy; 2018 - limengtian -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 
