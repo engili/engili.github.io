@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Animations | Lmt的博客]]></title>
   <link href="http://engili.github.io/blog/categories/animations/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-04-07T23:10:04+08:00</updated>
+  <updated>2018-04-21T17:52:56+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[limengtian]]></name>
@@ -348,10 +348,10 @@ fileprivate func moveLayerToRight() {
 <ul>
 <li><p>position-based gravity constants</p>
 
-<p>  <img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png">https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png</a>" width="549" height="340"></p></li>
+<p>  <img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png">https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png</a>" width="547"></p></li>
 <li><p>scalling-based gravity constatns</p>
 
-<p>  <img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png">https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png</a>" width="549" height="340"></p></li>
+<p>  <img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png">https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png</a>" width="472" height="255"></p></li>
 </ul>
 
 
@@ -373,7 +373,7 @@ fileprivate func moveLayerToRight() {
     <content type="html"><![CDATA[<!-- more -->
 
 
-<h3>UIView 可动画属性 (Animatable Property)</h3>
+<h3>1. UIView 可动画属性 (Animatable Property)</h3>
 
 <ul>
 <li>frame
@@ -398,7 +398,7 @@ fileprivate func moveLayerToRight() {
 
 <h5>注：改变某个正在进行的动画的属性的值，并不会打断动画，而是动画继续执行，并且最终态到你设置的那个值</h5>
 
-<h3>Animations Block-Based Methods</h3>
+<h3>2. Animations Block-Based Methods</h3>
 
 <pre><code class="swift">class func animate(withDuration duration: TimeInterval, animations: @escaping () -&gt; Void)
 </code></pre>
@@ -424,9 +424,9 @@ fileprivate func moveLayerToRight() {
 </ul>
 
 
-<h4>UIViewAnimationOptions</h4>
+<h4>2.1 UIViewAnimationOptions</h4>
 
-<h5>常规属性（可以设置多个）</h5>
+<h5>2.1.1 常规属性（可以设置多个）</h5>
 
 <ul>
 <li>layoutSubviews
@@ -546,7 +546,7 @@ class ViewController: UIViewController {
 </ul>
 
 
-<h5>速度属性 （可以设置一个）</h5>
+<h5>2.1.2 速度属性 （可以设置一个）</h5>
 
 <ul>
 <li>curveEaseInOut
@@ -576,7 +576,7 @@ class ViewController: UIViewController {
 </ul>
 
 
-<h5>转场动画属性 （可以设置一个）</h5>
+<h5>2.1.3 转场动画属性 （可以设置一个）</h5>
 
 <ul>
 <li>transitionFlipFromLeft</li>
@@ -591,12 +591,12 @@ class ViewController: UIViewController {
 </ul>
 
 
-<h3>嵌套动画</h3>
+<h3>3. 嵌套动画</h3>
 
 <p>嵌套动画，是嵌套在其他动画block中的动画，他开始动画的时间和他父动画一样，并且继承父动画的时间，时间曲线和其他动画配置。
 可以通过<code>overrideInheritedDuration</code>、<code>overrideInheritedCurve</code> 来使用自己的配置做动画</p>
 
-<h3>转场动画 (动画效果比较浮夸，用的较少)</h3>
+<h3>4. 转场动画 (动画效果比较浮夸，用的较少)</h3>
 
 <pre><code class="swift">class func transition(with view: UIView, duration: TimeInterval, options: UIViewAnimationOptions = [], animations: (() -&gt; Void)?, completion: ((Bool) -&gt; Void)? = nil)
 </code></pre>
@@ -621,6 +621,171 @@ class ViewController: UIViewController {
 <li>系统实现是直接从视图层级中移除，可以使用 <code>showHideTransitionViews</code> 只是显示和隐藏两个view</li>
 </ul>
 
+
+<h3>5. UIViewPropertyAnimator</h3>
+
+<h5>5.1.1 构造方法</h5>
+
+<pre><code class="swift ">convenience init(duration: TimeInterval, curve: UIViewAnimationCurve, animations: (() -&gt; Void)? = nil)
+</code></pre>
+
+<ul>
+<li>构造函数 创建出的animator是<code>inactive</code>状态</li>
+<li>需要调用<code>startAnimation()</code>开始动画</li>
+</ul>
+
+
+<h5>5.1.2 添加动画</h5>
+
+<pre><code class="swift">func addAnimations(_ animation: @escaping () -&gt; Void)
+</code></pre>
+
+<ul>
+<li>可以通过这个方法，添加多个动画block</li>
+<li><code>inactive</code> 状态下，添加的动画，进行时间是配置的时间，<code>active</code>状态下，添加的动画，进行的时间，是animtor剩余的时间</li>
+<li><code>stopped</code>状态下，添加动画，会报错</li>
+</ul>
+
+
+<h5>5.1.3 添加动画结束回调</h5>
+
+<pre><code class="swift"> func addCompletion(_ completion: @escaping (UIViewAnimatingPosition) -&gt; Void)
+</code></pre>
+
+<ul>
+<li>动画正常结束时，执行回调</li>
+<li>调用<code>stopAnimation(_:)</code> 参数设置<code>true</code>,执行回调</li>
+<li>调用<code>stopAnimation(_:)</code> 参数设置<code>false</code>,在<code>finishAnimation(at:)</code>调用后，执行回调</li>
+</ul>
+
+
+<h5>5.1.4 continueAnimation</h5>
+
+<p>调整一个暂停动画的 时间函数 和 时间</p>
+
+<pre><code class="swift">func continueAnimation(withTimingParameters parameters: UITimingCurveProvider?, durationFactor: CGFloat)
+</code></pre>
+
+<ul>
+<li>调用该方法，需要animtor处于<code>active</code>且暂停的状态</li>
+<li>当状态处于非<code>active</code>,或动画正在进行，或者 <code>isInterruptible</code>属性是false时 会报错</li>
+<li><code>parameters</code>: 新的时间函数，但是为了避免，动画有跳动的现象，一般改变时间函数后，会有一定的过渡效果</li>
+<li><code>durationFactor</code>: 时间乘法因子，和原有的时间，相乘，获取最终的时间</li>
+<li>当这次动画结束后，才会重写aniator的<code>timing</code>和<code>duration</code>属性</li>
+</ul>
+
+
+<h4>5.2 UIViewAnimating</h4>
+
+<h5>5.2.1 UIViewAnimatingState</h5>
+
+<ul>
+<li>inactive
+
+<ul>
+<li>构造方法创建的animator初始状态</li>
+</ul>
+</li>
+<li>active
+
+<ul>
+<li>当调用<code>startAnimation()</code> 或 <code>pauseAnimation()</code> 后，处于这个状态</li>
+</ul>
+</li>
+<li>stopped
+
+<ul>
+<li>动画自然结束，或者调用<code>stopAnimation(_:)</code></li>
+<li>调用<code>stopAnimation(_:)</code>,会让动画停留在当前值，而不是最终动画设定的值</li>
+</ul>
+</li>
+</ul>
+
+
+<p><img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png">https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png</a>" width="373" height="236"></p>
+
+<h5>5.2.2 UIViewAnimatingPosition</h5>
+
+<ul>
+<li>end</li>
+<li>start</li>
+<li>current</li>
+</ul>
+
+
+<h5>5.2.3 动画状态改变</h5>
+
+<ul>
+<li><code>startAnimation()</code>
+
+<ul>
+<li>开始一个动画，或者恢复一个暂停的动画</li>
+<li><code>stopped</code>状态的动画，不能调用该方法</li>
+</ul>
+</li>
+<li><code>pauseAnimation()</code>
+
+<ul>
+<li>暂停动画</li>
+<li><code>inactive</code>动画调用后，转为<code>active状态</code>，并且动画处于暂停状态</li>
+</ul>
+</li>
+<li><code>stopAnimation(_:)</code> 使动画，在当前状态停止</li>
+</ul>
+
+
+<pre><code class="swift">func stopAnimation(_ withoutFinishing: Bool)
+</code></pre>
+
+<ul>
+<li><p><code>withoutFinishing</code>:</p>
+
+<ul>
+<li>设置为<code>true</code>,animator进入<code>inactive</code>状态</li>
+<li>设置为<code>false</code>,animator进入<code>stopped</code>状态，之后可以进行一些其他操作，</li>
+</ul>
+</li>
+<li><p><code>finishAnimation(at:)</code>使得动画结束，animator回到<code>inactive</code></p></li>
+</ul>
+
+
+<h5>5.2.4 可交互动画</h5>
+
+<ul>
+<li><code>fractionComplete</code>
+
+<ul>
+<li>动画完成百分比</li>
+<li>通过修改这个值，可以使animator进行到相应的过程</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="swift 一个可交互动画例子">
+@objc fileprivate func handleInterruptableGesture(_ gesture: UIPanGestureRecognizer) {
+    let offset = UIScreen.main.bounds.width - 100
+    switch gesture.state {
+    case .began:
+        if interruptableAnimator == nil {
+            interruptableAnimator = UIViewPropertyAnimator(duration: 3.0, curve: .easeOut, animations: {
+                self.interruptableAnimtionView.frame = self.interruptableAnimtionView.frame.offsetBy(dx: offset, dy: 0)
+            })
+        }
+        interruptableAnimator!.pauseAnimation()
+        progressWhenInterrupted = interruptableAnimator!.fractionComplete
+    case .changed:
+        let translation = gesture.translation(in: self.interruptableAnimtionView)
+        interruptableAnimator!.fractionComplete = (translation.x / offset) + progressWhenInterrupted
+
+    case .ended, .cancelled:
+        let timing = UICubicTimingParameters(animationCurve: .easeOut)
+        interruptableAnimator!.continueAnimation(withTimingParameters: timing, durationFactor: 0)
+    default:
+        break
+    }
+}
+</code></pre>
 ]]></content>
   </entry>
   
