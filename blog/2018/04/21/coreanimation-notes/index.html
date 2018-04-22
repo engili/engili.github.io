@@ -9,8 +9,8 @@
   <meta name="author" content="limengtian">
 
   
-  <meta name="description" content="1. Implicit Animations 修改layer对象的可动画属性，会有默认的动画效果
-当修改layer tree上的layer对象时，对象的属性立即改变，但是表现层的layer并没有立即改变，这个时候Core Animation 根据你修改的值，创建了默认时间函数和动画参数的动画， &hellip;">
+  <meta name="description" content="CoreAnimation CoreAnimation将视图转换为位图，可以直接在GPU上操作，实现动画效果 1. Implicit Animations 修改layer对象的可动画属性，会有默认的动画效果
+当修改layer tree上的layer对象时，对象的属性立即改变， &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -88,6 +88,10 @@
 
 <div class="entry-content"><!-- more -->
 
+
+<h2>CoreAnimation</h2>
+
+<p><code>CoreAnimation</code>将视图转换为<code>位图</code>，可以直接在<code>GPU</code>上操作，实现动画效果</p>
 
 <h3>1. Implicit Animations</h3>
 
@@ -262,6 +266,30 @@
 <li>If you also specify a timing function in the animation object’s timingFunction property, that function is applied first followed by the timing function for the specific keyframe segment.</li>
 </ul>
 
+
+<h3>4. 移除显示动画</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">func</span> <span class="n">removeAnimation</span><span class="p">(</span><span class="n">forKey</span> <span class="nl">key</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>移除特定key值的动画，添加动画时定义的key值</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">func</span> <span class="n">removeAllAnimations</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>移除所有动画</li>
+</ul>
+
+
+<p>当一个正在进行的动画被移除的时候，core animation 使用layer的值（一般是动画结束的值）来重绘制，可能就会出现抖动。可以使用表现层layer的值，来设置layer的值</p>
 </div>
 
 

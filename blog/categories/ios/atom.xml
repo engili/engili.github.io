@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Lmt的博客]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-04-22T16:20:06+08:00</updated>
+  <updated>2018-04-22T18:21:41+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[limengtian]]></name>
@@ -20,6 +20,10 @@
     <id>http://engili.github.io/blog/2018/04/21/coreanimation-notes</id>
     <content type="html"><![CDATA[<!-- more -->
 
+
+<h2>CoreAnimation</h2>
+
+<p><code>CoreAnimation</code>将视图转换为<code>位图</code>，可以直接在<code>GPU</code>上操作，实现动画效果</p>
 
 <h3>1. Implicit Animations</h3>
 
@@ -172,6 +176,26 @@ self.redView.layer.opacity = 0.0
 <li>If you also specify a timing function in the animation object’s timingFunction property, that function is applied first followed by the timing function for the specific keyframe segment.</li>
 </ul>
 
+
+<h3>4. 移除显示动画</h3>
+
+<pre><code class="swift">func removeAnimation(forKey key: String)
+</code></pre>
+
+<ul>
+<li>移除特定key值的动画，添加动画时定义的key值</li>
+</ul>
+
+
+<pre><code class="swift">func removeAllAnimations()
+</code></pre>
+
+<ul>
+<li>移除所有动画</li>
+</ul>
+
+
+<p>当一个正在进行的动画被移除的时候，core animation 使用layer的值（一般是动画结束的值）来重绘制，可能就会出现抖动。可以使用表现层layer的值，来设置layer的值</p>
 ]]></content>
   </entry>
   
@@ -183,11 +207,7 @@ self.redView.layer.opacity = 0.0
     <content type="html"><![CDATA[<!-- more -->
 
 
-<h1>CoreAnimation</h1>
-
-<p><code>CoreAnimation</code>将视图转换为<code>位图</code>，可以直接在<code>GPU</code>上操作，实现动画效果</p>
-
-<h1>CALayer (Model Object)</h1>
+<h3>1. CALayer (Model Object)</h3>
 
 <ul>
 <li>CALayer是Model Objcet</li>
@@ -196,9 +216,9 @@ self.redView.layer.opacity = 0.0
 </ul>
 
 
-<h1>CALayer 坐标</h1>
+<h4>1.1 CALayer 坐标</h4>
 
-<h2>point-based 坐标系统</h2>
+<h5>1.1.1  point-based 坐标系统</h5>
 
 <ul>
 <li>基于屏幕坐标系统，可以表示layer之间的关系</li>
@@ -206,7 +226,7 @@ self.redView.layer.opacity = 0.0
 </ul>
 
 
-<h2>unit 坐标系统</h2>
+<h5>1.1.2 unit 坐标系统</h5>
 
 <ul>
 <li>和屏幕坐标系统无关</li>
@@ -228,7 +248,7 @@ self.redView.layer.opacity = 0.0
 </ul>
 
 
-<h1>Layer Trees</h1>
+<h3>2. Layer Trees</h3>
 
 <ul>
 <li>layer tree
@@ -261,7 +281,7 @@ self.redView.layer.opacity = 0.0
 </ul>
 
 
-<h1>改变UIView底层对应的Layer</h1>
+<h3>3. 改变UIView底层对应的Layer</h3>
 
 <ul>
 <li>重写<code>layerClass</code>方法即可</li>
@@ -275,21 +295,21 @@ self.redView.layer.opacity = 0.0
     }
 </code></pre>
 
-<h1>CALayer subclasses</h1>
+<h3>4. CALayer subclasses</h3>
 
 <!--- CAEmitterLayer
 
 Used to implement a Core Animation–based particle emitter system. The emitter layer object controls the generation of the particles and their origin.-->
 
 
-<h3>CAGradientLayer</h3>
+<h4>4.1 CAGradientLayer</h4>
 
 <ul>
 <li>绘制渐变色的Layer</li>
 </ul>
 
 
-<h4>property</h4>
+<h5>property</h5>
 
 <ul>
 <li><code>var colors: [Any]? { get set }</code>
@@ -383,11 +403,11 @@ Used to render a Quartz Composer composition. (OS X only)
 -->
 
 
-<h1>设置Layer content</h1>
+<h4>4.2 设置Layer content</h4>
 
-<h3>设置Lyaer的content，三种方法</h3>
+<p>设置Lyaer的content，三种方法</p>
 
-<h5>1. 给layer的<code>contents</code>属性，设置图片（适用于内容几乎不会或者很少改变</h5>
+<h5>4.2.1 给layer的<code>contents</code>属性，设置图片（适用于内容几乎不会或者很少改变</h5>
 
 <ul>
 <li><code>var contents: Any? { get set }</code> 使用<code>CGImage</code></li>
@@ -396,7 +416,7 @@ Used to render a Quartz Composer composition. (OS X only)
 </ul>
 
 
-<h5>2. 给layer设置<code>delegate</code>,让委托去绘制内容</h5>
+<h5>4.2.2 给layer设置<code>delegate</code>,让委托去绘制内容</h5>
 
 <ul>
 <li><code>UIView</code>底层的layer，自动和UIView设置了委托关系</li>
@@ -485,7 +505,7 @@ fileprivate func moveLayerToRight() {
 }
 </code></pre>
 
-<h5>3. 定义layer的子类，重写绘制的方法</h5>
+<h5>4.2.3 定义layer的子类，重写绘制的方法</h5>
 
 <ul>
 <li><code>func display()</code>
@@ -505,7 +525,7 @@ fileprivate func moveLayerToRight() {
 </ul>
 
 
-<h3>Contents Property</h3>
+<h3>5. Contents Property</h3>
 
 <ul>
 <li><p>position-based gravity constants</p>
@@ -517,11 +537,19 @@ fileprivate func moveLayerToRight() {
 </ul>
 
 
-<h4>定义Layer其他外观</h4>
+<h3>6. 定义Layer其他外观</h3>
 
 <ul>
 <li><code>background</code> 位于contents image 下</li>
 <li><code>border</code> 位于contens image 上</li>
+</ul>
+
+
+<h3>7. layer Hierarchy</h3>
+
+<ul>
+<li>将layer添加到layer Hierarchy后，一定要设置layer的<code>bounds</code>和<code>position</code>,Core Animation 默认设置layer的长宽为0，layer的<code>position</code>为（0，0）</li>
+<li>尽量使用整数设置Layer的长和宽</li>
 </ul>
 
 ]]></content>
