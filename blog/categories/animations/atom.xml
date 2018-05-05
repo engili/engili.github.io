@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Animations | Lmt的博客]]></title>
   <link href="http://engili.github.io/blog/categories/animations/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-05-06T07:13:33+08:00</updated>
+  <updated>2018-05-06T07:27:02+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[limengtian]]></name>
@@ -550,10 +550,10 @@ fileprivate func moveLayerToRight() {
 <ul>
 <li><p>position-based gravity constants</p>
 
-<p>  {% img <a href="https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png">https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png</a> 547.5 339.5 %}</p></li>
+<p>  <img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png">https://github.com/engili/engili.github.io/raw/master/images/layer_contentsgravity1_2x.png</a>" width="547"></p></li>
 <li><p>scalling-based gravity constatns</p>
 
-<p>  {% img <a href="https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png">https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png</a> 472 255 %}</p></li>
+<p>  <img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png">https://github.com/engili/engili.github.io/raw/master/images/positioningmask_2x.png</a>" width="472" height="255"></p></li>
 </ul>
 
 
@@ -912,7 +912,7 @@ class ViewController: UIViewController {
 </ul>
 
 
-<p>{% img <a href="https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png">https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png</a>  373 236.5 %}</p>
+<p><img class="<a" src="href="https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png">https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png</a>" width="373" height="236"></p>
 
 <h5>5.2.2 UIViewAnimatingPosition</h5>
 
