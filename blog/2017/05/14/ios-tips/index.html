@@ -1,0 +1,311 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>iOS Tips - Lmt的博客</title>
+  <meta name="author" content="limengtian">
+
+  
+  <meta name="description" content="1.在block执行期间，weak引用强持有 1
+2
+3
+4
+5
+__weak typedef(someClass) weakClass = someClass;
+[xxx setHandler:^{ typedef(someClass) strongClass = weakClass; [ &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://engili.github.io/blog/2017/05/14/ios-tips/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="Lmt的博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">Lmt的博客</a></h1>
+  
+    <h2>O__O "….</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="sitesearch" value="engili.github.io">
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">技术博客</a></li>
+  <li><a href="/blog/archives">博客归档</a></li>
+  <li><a href="/essay">随笔</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">iOS Tips</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2017-05-14T06:58:24+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:58 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><!--more-->
+
+
+<h3>1.在block执行期间，weak引用强持有</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="k">__weak</span> <span class="k">typedef</span><span class="p">(</span><span class="n">someClass</span><span class="p">)</span> <span class="n">weakClass</span> <span class="o">=</span> <span class="n">someClass</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">xxx</span> <span class="nl">setHandler</span><span class="p">:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">typedef</span><span class="p">(</span><span class="n">someClass</span><span class="p">)</span> <span class="n">strongClass</span> <span class="o">=</span> <span class="n">weakClass</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">strongClass</span> <span class="n">doSomething</span><span class="p">];</span>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>为了避免强引用环，在使用闭包时，一些引入的对象，都使用不增加引用计数的weak指针持有，但当使用的时候，为了避免对象被提前释放，可以用strong指针持有，可以确保在使用该对象的时候，不会被释放。
+注：</li>
+<li>使用不带修饰的指针变量，默认是带有<code>__strong</code>修饰</li>
+</ul>
+
+
+<h3>2. UISwitch 重复触发action方法</h3>
+
+<p>理论上，只用当用户点击了UISwitch,才会触发，<code>vauleChange</code> 的action方法
+但是实际开发中，发现iOS10机型上，如果在action方法里调用了<code>-setOn:animated:</code>或者<code>setOn:</code> ，就会多触发一次action方法。</p>
+
+<h4>解决方案</h4>
+
+<ol>
+<li>避免在valueChange方法里调用<code>-setOn:animated:</code>或<code>setOn:</code></li>
+<li>如果无法避免，使用<code>dispatch_async</code>,在主队列执行这些方法（这个方法有个缺点，比较卡的手机会看到闪动的现象）</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">IBAction</span><span class="p">)</span><span class="nf">valueChanged:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>       <span class="p">[</span><span class="n">sender</span> <span class="nl">setOn</span><span class="p">:</span><span class="nb">YES</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.iOS 10 以下机型不会出现这个问题，iOS11 待验证</p>
+
+<h4>参考</h4>
+
+<p><a href="https://stackoverflow.com/questions/39566361/uiswitch-seton-animated-does-not-work-as-document">UISwitch setOn(:, animated:) does not work as document</a></p>
+
+<h3>3.Xcode8 生成CoreData NSManagedObject 报Duplicate symbol error</h3>
+
+<p>上周写CoreData的时候，当使用Editor的Create NSManagedObject SubClass 生成好对应Entity的ManagedObject后，编译的时候报Duplicate symbol error，意思是符号重复定义的错误，一脸蒙蔽好吧，都是系统生成的，我什么都没有做=。=</p>
+
+<p>然后网上搜了一下，搜到了问题的原因和解决方案
+<a href="http://stackoverflow.com/questions/40460307/duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link">duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link</a>
+<a href="http://stackoverflow.com/questions/38409074/xcode-beta-8-cant-create-core-data/38413941#38413941">xcode-beta-8-cant-create-core-data</a></p>
+
+<h3>原因</h3>
+
+<p>Xcode 8 的.xcdatamodeId 文件会自动生成那些Entity的类，当你在Editor->Create NSManagedObject SubClass 再次生成这些Entity类的时候，编译的时候，就会有符号重定义的错误</p>
+
+<h3>解决方案</h3>
+
+<ul>
+<li>当你不需要自己修改NSManagedObject 文件时候，就使用Xcode生成的文件，直接引用头文件就好。</li>
+<li>当你需要自己修改NSManagedObject 文件，在Xcode中选中.xcdatamodeId 文件 在右侧属性栏中， <del>把Tools Version 修改成小于8.0的版本 ，然后就可以使用Editor 生成NSManagedObject类了。</del> 修改Entity Inspector 里Class对应的Codegen
+如下图：</li>
+</ul>
+
+
+<p><img src="http://upload-images.jianshu.io/upload_images/311588-e103e3f90feaa4c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width="547"></p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">limengtian</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2017-05-14T06:58:24+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:58 am</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>ios</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2017/03/10/oc-static/" title="Previous Post: Objective-C static定义常量和变量总结">&laquo; Objective-C static定义常量和变量总结</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2018/03/24/uikit-animations-note/" title="Next Post: UIKit Animations 学习笔记">UIKit Animations 学习笔记 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2018/04/21/coreanimation-notes/">Core Animation 学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2018/04/05/calayer-notes/">CALayer 学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2018/04/01/keyboards-notes/">Keyboards 学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2018/03/24/uikit-animations-note/">UIKit Animations 学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/05/14/ios-tips/">iOS Tips</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/engili">@engili</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'engili',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2018 - limengtian -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

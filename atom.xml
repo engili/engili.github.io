@@ -4,7 +4,7 @@
   <title><![CDATA[Lmt的博客]]></title>
   <link href="http://engili.github.io/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-04-22T18:21:41+08:00</updated>
+  <updated>2018-05-06T07:10:31+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[limengtian]]></name>
@@ -222,6 +222,26 @@
 
 
 <p>当一个正在进行的动画被移除的时候，core animation 使用layer的值（一般是动画结束的值）来重绘制，可能就会出现抖动。可以使用表现层layer的值，来设置layer的值</p>
+
+<h3>5. 自定义动画的时间</h3>
+
+<ul>
+<li><code>beginTime</code>: 动画默认在下一个run loop cycle 开始时执行，定义beginTime 可以让动画延迟执行，也可以让几个动画，串行执行</li>
+<li><code>timeOffset</code> 可以让animation group中的某些动画，延后执行</li>
+</ul>
+
+
+<h3>6.性能建议</h3>
+
+<ul>
+<li>尽量保持<code>opaque</code>属性为<code>true</code></li>
+<li><code>CAShapeLayer</code>尽量使用简单的<code>path</code>,较为复杂的实现，可以转换为多个简单<code>path</code>的<code>CAShapeLayer</code>的组合</li>
+<li>若使用自己的图片，尽量直接设置<code>contents</code>属性,layer就不会为 back store消耗内存，而直接使用提供的图片</li>
+<li>尽量使用整数设置layer的宽高</li>
+<li>使用异步渲染 <code>drawsAsynchronously</code>,一般绘制回调，如<code>drawRect:</code>都是在主线程进行的，设置<code>drawsAsynchronously</code>属性后，会在异步线程进行回调，但需要注意线程安全，同时使用的时候，实际测量是否真的提高性能了</li>
+<li>添加阴影的时候，设置<code>shadowPath</code>，而不是让Core Animation去决定阴影，</li>
+</ul>
+
 ]]></content>
   </entry>
   
@@ -1361,6 +1381,304 @@ Used to render a Quartz Composer composition. (OS X only)
 </span><span class='line'>        <span class="k">break</span>
 </span><span class='line'>    <span class="p">}</span>
 </span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS Tips]]></title>
+    <link href="http://engili.github.io/blog/2017/05/14/ios-tips/"/>
+    <updated>2017-05-14T06:58:24+08:00</updated>
+    <id>http://engili.github.io/blog/2017/05/14/ios-tips</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h3>1.在block执行期间，weak引用强持有</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="k">__weak</span> <span class="k">typedef</span><span class="p">(</span><span class="n">someClass</span><span class="p">)</span> <span class="n">weakClass</span> <span class="o">=</span> <span class="n">someClass</span><span class="p">;</span>
+</span><span class='line'><span class="p">[</span><span class="n">xxx</span> <span class="nl">setHandler</span><span class="p">:</span><span class="o">^</span><span class="p">{</span>
+</span><span class='line'>    <span class="k">typedef</span><span class="p">(</span><span class="n">someClass</span><span class="p">)</span> <span class="n">strongClass</span> <span class="o">=</span> <span class="n">weakClass</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">[</span><span class="n">strongClass</span> <span class="n">doSomething</span><span class="p">];</span>
+</span><span class='line'><span class="p">}];</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>为了避免强引用环，在使用闭包时，一些引入的对象，都使用不增加引用计数的weak指针持有，但当使用的时候，为了避免对象被提前释放，可以用strong指针持有，可以确保在使用该对象的时候，不会被释放。
+注：</li>
+<li>使用不带修饰的指针变量，默认是带有<code>__strong</code>修饰</li>
+</ul>
+
+
+<h3>2. UISwitch 重复触发action方法</h3>
+
+<p>理论上，只用当用户点击了UISwitch,才会触发，<code>vauleChange</code> 的action方法
+但是实际开发中，发现iOS10机型上，如果在action方法里调用了<code>-setOn:animated:</code>或者<code>setOn:</code> ，就会多触发一次action方法。</p>
+
+<h4>解决方案</h4>
+
+<ol>
+<li>避免在valueChange方法里调用<code>-setOn:animated:</code>或<code>setOn:</code></li>
+<li>如果无法避免，使用<code>dispatch_async</code>,在主队列执行这些方法（这个方法有个缺点，比较卡的手机会看到闪动的现象）</li>
+</ol>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="p">-</span> <span class="p">(</span><span class="kt">IBAction</span><span class="p">)</span><span class="nf">valueChanged:</span><span class="p">(</span><span class="kt">id</span><span class="p">)</span><span class="nv">sender</span> <span class="p">{</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'>    <span class="n">dispatch_async</span><span class="p">(</span><span class="n">dispatch_get_main_queue</span><span class="p">(),</span> <span class="o">^</span><span class="p">{</span>
+</span><span class='line'>       <span class="p">[</span><span class="n">sender</span> <span class="nl">setOn</span><span class="p">:</span><span class="nb">YES</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>    <span class="p">...</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>3.iOS 10 以下机型不会出现这个问题，iOS11 待验证</p>
+
+<h4>参考</h4>
+
+<p><a href="https://stackoverflow.com/questions/39566361/uiswitch-seton-animated-does-not-work-as-document">UISwitch setOn(:, animated:) does not work as document</a></p>
+
+<h3>3.Xcode8 生成CoreData NSManagedObject 报Duplicate symbol error</h3>
+
+<p>上周写CoreData的时候，当使用Editor的Create NSManagedObject SubClass 生成好对应Entity的ManagedObject后，编译的时候报Duplicate symbol error，意思是符号重复定义的错误，一脸蒙蔽好吧，都是系统生成的，我什么都没有做=。=</p>
+
+<p>然后网上搜了一下，搜到了问题的原因和解决方案
+<a href="http://stackoverflow.com/questions/40460307/duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link">duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link</a>
+<a href="http://stackoverflow.com/questions/38409074/xcode-beta-8-cant-create-core-data/38413941#38413941">xcode-beta-8-cant-create-core-data</a></p>
+
+<h3>原因</h3>
+
+<p>Xcode 8 的.xcdatamodeId 文件会自动生成那些Entity的类，当你在Editor->Create NSManagedObject SubClass 再次生成这些Entity类的时候，编译的时候，就会有符号重定义的错误</p>
+
+<h3>解决方案</h3>
+
+<ul>
+<li>当你不需要自己修改NSManagedObject 文件时候，就使用Xcode生成的文件，直接引用头文件就好。</li>
+<li>当你需要自己修改NSManagedObject 文件，在Xcode中选中.xcdatamodeId 文件 在右侧属性栏中， <del>把Tools Version 修改成小于8.0的版本 ，然后就可以使用Editor 生成NSManagedObject类了。</del> 修改Entity Inspector 里Class对应的Codegen
+如下图：</li>
+</ul>
+
+
+<p><img src="http://upload-images.jianshu.io/upload_images/311588-e103e3f90feaa4c9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" width="547"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Objective-C Static定义常量和变量总结]]></title>
+    <link href="http://engili.github.io/blog/2017/03/10/oc-static/"/>
+    <updated>2017-03-10T20:48:13+08:00</updated>
+    <id>http://engili.github.io/blog/2017/03/10/oc-static</id>
+    <content type="html"><![CDATA[<!--more-->
+
+
+<h3>1. <code>.m</code> 文件里定义static 常量</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="c1">// .m</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">kConstant</span> <span class="o">=</span> <span class="n">xxx</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="err">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>该文件里全局可见 (准确说应该是compilation unit，而不是文件)</li>
+<li>外部文件不能通过<code>extern</code>引用</li>
+</ul>
+
+
+<h3>2. <code>.m</code> 文件里定义static 变量</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="c1">// .m</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="kt">int</span> <span class="n">intVar</span> <span class="o">=</span> <span class="n">xxx</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@implementation</span> <span class="err">...</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// .h</span>
+</span><span class='line'><span class="c1">//实现类似类变量的机制</span>
+</span><span class='line'><span class="o">+</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">intVar</span><span class="p">;</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">setIntVar:</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="nv">intVar</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>OC里没有类变量的概念，但通过静态的全局变量，可以实现类似类变量的东西
+
+<ul>
+<li>因为一般情况下，OC里的类以文件为单位，划分。通过给类添加，get 和 set的类方法，去实际操作这个全局变量，就可以实现类似类变量的机制。</li>
+</ul>
+</li>
+<li>外部文件不能通过extern引用</li>
+</ul>
+
+
+<h3>3. <code>.h</code> 里定义static 常量</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="c1">// .h</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">const</span> <span class="kt">int</span> <span class="n">kConstatnt</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><a href="http://stackoverflow.com/a/92641/4635964">Variable declarations in header files - static or not?</a></p>
+
+<blockquote><p>这里static，意味着，每一个包含这个头文件的源文件里，会包含一个这个常量的拷贝，但与此同时，链接时，并不会出现符号冲定义的错误。</p></blockquote>
+
+<ul>
+<li>外部文件，可以通过引用该头文件，使用这个全局常量，但这里获得的是该常量的一份，拷贝，因为常量并不能修改，所以获取的是拷贝，也没有太多问题</li>
+<li>如果这里，去掉这个static，外部文件引用这个头文件，就会出现符号重定义的链接错误</li>
+<li>但是这种实现全局常量的方式不太好</li>
+</ul>
+
+
+<h3>4. <code>.h</code> 里定义static 变量</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="c1">// .h</span>
+</span><span class='line'><span class="k">static</span> <span class="kt">int</span> <span class="n">intVar</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>这里同在<code>.h</code>里定义static 常量一样，每一个引用该头文件的源文件，获取到的是这个变量的一份拷贝，也就是说你在不同的文件里，修改这个变量，都是修改当前文件里的一份拷贝，只会在当前这个文件范围里生效</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="c1">// a.h </span>
+</span><span class='line'><span class="k">static</span> <span class="kt">int</span> <span class="n">a</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>  <span class="c1">//定义了一个全局变量</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">A</span>: <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">printA</span><span class="p">;</span> <span class="c1">//打印a的值</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// a.m</span>
+</span><span class='line'><span class="k">@implementation</span>
+</span><span class='line'><span class="err">+ (</span><span class="nc">void</span><span class="p">)</span><span class="n">printA</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'><span class="c1">// b.h</span>
+</span><span class='line'><span class="k">@interface</span> <span class="nc">B</span>: <span class="bp">NSObject</span>
+</span><span class='line'><span class="p">+</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">printA</span><span class="p">;</span> <span class="c1">//打印a的值</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// b.m </span>
+</span><span class='line'><span class="cp">#import &quot;a.h&quot; </span><span class="c1">//引入了全局变量 a</span>
+</span><span class='line'><span class="k">@implementation</span>
+</span><span class='line'><span class="err">+ (</span><span class="nc">void</span><span class="p">)</span><span class="n">printA</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">a</span> <span class="o">++</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">NSLog</span><span class="p">(</span><span class="s">&quot;%d&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">);</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="k">@end</span>
+</span><span class='line'><span class="c1">// main.m</span>
+</span><span class='line'><span class="p">[</span><span class="n">A</span> <span class="n">printA</span><span class="p">];</span>  <span class="c1">// 1 </span>
+</span><span class='line'><span class="p">[</span><span class="n">B</span> <span class="n">printA</span><span class="p">];</span>  <span class="c1">// 2</span>
+</span><span class='line'><span class="p">[</span><span class="n">A</span> <span class="n">printA</span><span class="p">];</span>  <span class="c1">// 1</span>
+</span><span class='line'><span class="p">[</span><span class="n">B</span> <span class="n">printA</span><span class="p">];</span>  <span class="c1">// 3</span>
+</span><span class='line'><span class="p">[</span><span class="n">A</span> <span class="n">printA</span><span class="p">];</span>  <span class="c1">// 1</span>
+</span><span class='line'><span class="p">[</span><span class="n">B</span> <span class="n">printA</span><span class="p">];</span>  <span class="c1">// 4</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<ul>
+<li>所以这种方式，定义的变量，并不是真正的全局变量。</li>
+</ul>
+
+
+<h3>5.更优雅的方式，定义全局变量和全局常量</h3>
+
+<ul>
+<li>在<code>.m</code>文件里，定义全局变量，和全局常量，不用static修饰</li>
+<li>在<code>.h</code>文件里，用extern声明这些全局变量和全局</li>
+<li>其他文件引用这个<code>.h</code>来使用相应的常量和变量。</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='obj-c'><span class='line'><span class="c1">// .m</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// .h</span>
+</span><span class='line'><span class="k">extern</span> <span class="kt">int</span> <span class="n">a</span><span class="p">;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 

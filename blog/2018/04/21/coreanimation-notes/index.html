@@ -290,6 +290,26 @@
 
 
 <p>当一个正在进行的动画被移除的时候，core animation 使用layer的值（一般是动画结束的值）来重绘制，可能就会出现抖动。可以使用表现层layer的值，来设置layer的值</p>
+
+<h3>5. 自定义动画的时间</h3>
+
+<ul>
+<li><code>beginTime</code>: 动画默认在下一个run loop cycle 开始时执行，定义beginTime 可以让动画延迟执行，也可以让几个动画，串行执行</li>
+<li><code>timeOffset</code> 可以让animation group中的某些动画，延后执行</li>
+</ul>
+
+
+<h3>6.性能建议</h3>
+
+<ul>
+<li>尽量保持<code>opaque</code>属性为<code>true</code></li>
+<li><code>CAShapeLayer</code>尽量使用简单的<code>path</code>,较为复杂的实现，可以转换为多个简单<code>path</code>的<code>CAShapeLayer</code>的组合</li>
+<li>若使用自己的图片，尽量直接设置<code>contents</code>属性,layer就不会为 back store消耗内存，而直接使用提供的图片</li>
+<li>尽量使用整数设置layer的宽高</li>
+<li>使用异步渲染 <code>drawsAsynchronously</code>,一般绘制回调，如<code>drawRect:</code>都是在主线程进行的，设置<code>drawsAsynchronously</code>属性后，会在异步线程进行回调，但需要注意线程安全，同时使用的时候，实际测量是否真的提高性能了</li>
+<li>添加阴影的时候，设置<code>shadowPath</code>，而不是让Core Animation去决定阴影，</li>
+</ul>
+
 </div>
 
 
@@ -355,6 +375,10 @@
     
       <li class="post">
         <a href="/blog/2018/03/24/uikit-animations-note/">UIKit Animations 学习笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2017/05/14/ios-tips/">iOS Tips</a>
       </li>
     
   </ul>
