@@ -4,7 +4,7 @@
   <title><![CDATA[Lmt的博客]]></title>
   <link href="http://engili.github.io/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-05-06T08:14:09+08:00</updated>
+  <updated>2018-05-22T20:24:22+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[limengtian]]></name>
@@ -2445,6 +2445,94 @@ The default value of this property is NO.</p></blockquote>
 
 
 <p><img src="https://github.com/engili/engili.github.io/raw/master/images/ios-tips-01.png" width="547"></p>
+
+<h3>4. Swift 单例</h3>
+
+<h4>使用类常量</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="n">MTNetWorkManager</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">let</span> <span class="n">shared</span> <span class="o">=</span> <span class="n">MTNetWorkManager</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">API</span><span class="p">.</span><span class="n">baseURL</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">private</span> <span class="k">init</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">baseURL</span> <span class="o">=</span> <span class="n">baseURL</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//外部调用 MTNetWorkManager.shared</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>使用类方法</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="n">MTNetWorkManager</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">private</span> <span class="k">let</span> <span class="n">sharedInstance</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="n">shared</span> <span class="o">=</span> <span class="n">MTNetWorkManager</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">API</span><span class="p">.</span><span class="n">baseURL</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Configure 可以做一些初始化配置</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">shared</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">private</span> <span class="k">init</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">baseURL</span> <span class="o">=</span> <span class="n">baseURL</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">func</span> <span class="n">shared</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="k">return</span> <span class="n">sharedInstance</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//外部调用 MTNetWorkManager.shared()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 ]]></content>
   </entry>
   

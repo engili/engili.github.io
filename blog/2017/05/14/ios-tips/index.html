@@ -1,21 +1,11 @@
-
 <!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<html class="no-js" lang="en">
 <head>
   <meta charset="utf-8">
   <title>iOS Tips - Lmt的博客</title>
   <meta name="author" content="limengtian">
 
   
-  <meta name="description" content="1.在block执行期间，weak引用强持有 1
-2
-3
-4
-5
-__weak typedef(someClass) weakClass = someClass;
-[xxx setHandler:^{ typedef(someClass) strongClass = weakClass; [ &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -25,73 +15,116 @@ __weak typedef(someClass) weakClass = someClass;
 
   
   <link rel="canonical" href="http://engili.github.io/blog/2017/05/14/ios-tips/">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/favicon.png" type="image/png" rel="icon">
   <link href="/atom.xml" rel="alternate" title="Lmt的博客" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="/javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  <!-- http://opengraphprotocol.org/ -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="http://engili.github.io/blog/2017/05/14/ios-tips/">
+  <meta property="og:title" content="iOS Tips - Lmt的博客">
+  
+
+  <script src="/javascripts/libs/jquery/jquery-2.1.3.min.js"></script>
+
+<link href="/assets/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<link href="/assets/bootstrap/dist/css/bootstrap-theme.min.css" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+
+  
+  <link href="/stylesheets/screen.css" media="screen, projection, print" rel="stylesheet" type="text/css">
 
   
 
 </head>
 
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">Lmt的博客</a></h1>
-  
-    <h2>O__O "….</h2>
-  
-</hgroup>
+  <body   >
+    <a href="#content" class="sr-only sr-only-focusable">Skip to main content</a>
+    <div id="wrap">
+      
+        <header role="banner">
+          <nav class="navbar navbar-default" role="navigation">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" title="toggle navbar" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Lmt的博客</a>
+        </div>
 
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="https://www.google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="sitesearch" value="engili.github.io">
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">技术博客</a></li>
-  <li><a href="/blog/archives">博客归档</a></li>
-  <li><a href="/essay">随笔</a></li>
-</ul>
-
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <!-- <li ><a href="#">Projects</a></li> -->
+<li ><a href="/blog/archives">归档</a></li>
+<!-- <li ><a href="#">About</a></li> -->
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="subscribe-rss" href="/atom.xml" title="subscribe via RSS">
+                        <span class="visible-xs">RSS</span>
+                        <img class="hidden-xs" src="/images/rss.png" alt="RSS">
+                    </a>
+                </li>
+                
+            </ul>
+            
+                <form class="navbar-form navbar-right" action="https://www.google.com/search" method="GET">
+                    <input type="hidden" name="sitesearch" value="engili.github.io">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="q" placeholder="Search">
+                    </div>
+                </form>
+            
+        </div>
+    </div>
 </nav>
-  <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
-  
-  <header>
+
+
+        </header>
+      
+      <div id="main" role="main" class="container">
+        <div id="content">
+          <div class="row">
+  <div class="page-content" itemscope itemtype="http://schema.org/Blog">
+    <meta itemprop="name" content="Lmt的博客" />
     
-      <h1 class="entry-title">iOS Tips</h1>
+    <meta itemprop="url" content="http://engili.github.io" />
+    <article class="hentry" role="article" itemprop="blogPost" itemscope itemtype="http://schema.org/BlogPosting">
+      
+  <header class="page-header">
     
-    
-      <p class="meta">
+      <p class="meta text-muted text-uppercase">
         
 
 
 
 
-<time class='entry-date' datetime='2017-05-14T06:58:24+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:58 am</span></time>
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2017-05-14T06:58:24+08:00"  data-updated="true" itemprop="datePublished dateCreated">Sun 14 May 2017,  6:58 AM</time>
         
       </p>
+    
+    
+    <h1 class="entry-title" itemprop="name headline">
+        iOS Tips
+        
+    </h1>
     
   </header>
 
 
-<div class="entry-content"><!--more-->
+<div class="entry-content clearfix" itemprop="articleBody description"><!--more-->
 
 
 <h3>1.在block执行期间，weak引用强持有</h3>
@@ -174,24 +207,177 @@ __weak typedef(someClass) weakClass = someClass;
 
 
 <p><img src="https://github.com/engili/engili.github.io/raw/master/images/ios-tips-01.png" width="547"></p>
+
+<h3>4. Swift 单例</h3>
+
+<h4>使用类常量</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="n">MTNetWorkManager</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">let</span> <span class="n">shared</span> <span class="o">=</span> <span class="n">MTNetWorkManager</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">API</span><span class="p">.</span><span class="n">baseURL</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">private</span> <span class="k">init</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">baseURL</span> <span class="o">=</span> <span class="n">baseURL</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//外部调用 MTNetWorkManager.shared</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h4>使用类方法</h4>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='swift'><span class='line'><span class="k">class</span> <span class="n">MTNetWorkManager</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="n">private</span> <span class="k">let</span> <span class="n">sharedInstance</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="n">shared</span> <span class="o">=</span> <span class="n">MTNetWorkManager</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">API</span><span class="p">.</span><span class="n">baseURL</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//Configure 可以做一些初始化配置</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">return</span> <span class="n">shared</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}()</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">let</span> <span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">private</span> <span class="k">init</span><span class="p">(</span><span class="nl">baseURL</span><span class="p">:</span> <span class="n">URL</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'><span class="nb">self</span><span class="p">.</span><span class="n">baseURL</span> <span class="o">=</span> <span class="n">baseURL</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">static</span> <span class="k">func</span> <span class="n">shared</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'><span class="k">return</span> <span class="n">sharedInstance</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">//外部调用 MTNetWorkManager.shared()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
 </div>
 
 
-  <footer>
-    <p class="meta">
-      
+      <footer class="post-footer">
+        <p class="meta text-muted">
+          
   
 
-<span class="byline author vcard">Posted by <span class="fn">limengtian</span></span>
-
-      
 
 
+<figure class="author-image">
+    <span class="img" href="/about" style="background-image: url(/images/avatar.jpg)"><span class="hidden">Picture</span></span>
+</figure>
+
+<section class="author">
+    <h4><span class="byline author vcard" itemprop="author" itemscope itemtype="http://schema.org/Person"><span class="fn" itemprop="name">limengtian</span></span></h4>
+
+    <div class="author-meta">
+        <span class="author-link icon-link"><i class="fa fa-link" aria-hidden="true"></i> <a href="http://engili.github.io">http://engili.github.io</a></span>
+    </div>
+</section>
+
+<hr>
+
+<section class="share">
+    
+    <h4>Share this post</h4>
+    
+    <a class="fa fa-twitter" href="https://twitter.com/intent/tweet?url=http://engili.github.io/blog/2017/05/14/ios-tips/;" 
+        onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+        <span class="hidden">Twitter</span>
+    </a>
+    <a class="fa fa-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://engili.github.io/blog/2017/05/14/ios-tips/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+        <span class="hidden">Facebook</span>
+    </a>
+    <a class="fa fa-google-plus" href="https://plus.google.com/share?url=http://engili.github.io/blog/2017/05/14/ios-tips/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+        <span class="hidden">Google+</span>
+    </a>
+    
+</section>
 
 
-<time class='entry-date' datetime='2017-05-14T06:58:24+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>14</span><span class='date-suffix'>th</span>, <span class='date-year'>2017</span></span> <span class='time'>6:58 am</span></time>
-      
 
+
+<!--
+<footer class="post-footer">
+
+
+            <section class="share">
+                <h4>Share this post</h4>
+                <a class="icon-twitter" href="https://twitter.com/intent/tweet?text=Instant%20Movie%20Streamer%20v3%20Release&amp;url=http://iyask.me/instant-movie-streamer-v3-release/" onclick="window.open(this.href, 'twitter-share', 'width=550,height=235');return false;">
+                    <span class="hidden">Twitter</span>
+                </a>
+                <a class="icon-facebook" href="https://www.facebook.com/sharer/sharer.php?u=http://iyask.me/instant-movie-streamer-v3-release/" onclick="window.open(this.href, 'facebook-share','width=580,height=296');return false;">
+                    <span class="hidden">Facebook</span>
+                </a>
+                <a class="icon-google-plus" href="https://plus.google.com/share?url=http://iyask.me/instant-movie-streamer-v3-release/" onclick="window.open(this.href, 'google-plus-share', 'width=490,height=530');return false;">
+                    <span class="hidden">Google+</span>
+                </a>
+            </section>
+
+
+        </footer>
+
+
+-->
+          
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="glyphicon glyphicon-calendar"></span> <time datetime="2017-05-14T06:58:24+08:00"  data-updated="true" itemprop="datePublished dateCreated">Sun 14 May 2017,  6:58 AM</time>
+          <br>
+
+<span class="glyphicon glyphicon-tags"></span>&nbsp;
 <span class="categories">
   
     <a class='category' href='/blog/categories/ios/'>ios</a>
@@ -199,103 +385,59 @@ __weak typedef(someClass) weakClass = someClass;
 </span>
 
 
-    </p>
+        </p>
+        
+          <div class="pager">
+            
+            
+              
+                <a href="/blog/2017/03/10/oc-static/" class="col-xs-12 col-md-4 btn btn-default" title="Previous Post: Objective-C static定义常量和变量总结"> 
+                  <div class="text-muted">
+                    <small>Previous Post</small>
+                  </div>
+                  <div class="pager-title">
+                    <h4>Objective-C static定义常量和变量总结</h4>
+                  </div>
+                </a>
+              
+            
+            
+            
+              
+              <a href="/blog/2017/08/05/layoutMagrin-preservesSuperviewLayoutMargins-notes/" class="col-xs-12 col-md-4 btn btn-default pull-right" title="Next Post: LayoutMargin & preservesSuperviewLayoutMargins 学习笔记">
+                <div class="text-muted">
+                  <small>Next Post</small>
+                </div>
+                <div class="pager-title">
+                  <h4>LayoutMargin & preservesSuperviewLayoutMargins 学习笔记</h4>
+                </div>
+              </a>
+              
+            
+            
+          </div>
+        
+      </footer>
+    </article>
     
-      <div class="sharing">
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2017/03/10/oc-static/" title="Previous Post: Objective-C static定义常量和变量总结">&laquo; Objective-C static定义常量和变量总结</a>
-      
-      
-        <a class="basic-alignment right" href="/blog/2017/08/05/layoutMagrin-preservesSuperviewLayoutMargins-notes/" title="Next Post: LayoutMargin & preservesSuperviewLayoutMargins 学习笔记">LayoutMargin & preservesSuperviewLayoutMargins 学习笔记 &raquo;</a>
-      
-    </p>
-  </footer>
-</article>
-
-</div>
-
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2018/04/21/coreanimation-notes/">Core Animation 学习笔记</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2018/04/05/calayer-notes/">CALayer 学习笔记</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2018/04/01/keyboards-notes/">Keyboards 学习笔记</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2018/03/24/uikit-animations-note/">UIKit Animations 学习笔记</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2017/08/20/coredata-note/">CoreData 学习笔记</a>
-      </li>
-    
-  </ul>
-</section>
-
-<section>
-  <h1>GitHub Repos</h1>
-  <ul id="gh_repos">
-    <li class="loading">Status updating...</li>
-  </ul>
-  
-  <a href="https://github.com/engili">@engili</a> on GitHub
-  
-  <script type="text/javascript">
-    $(document).ready(function(){
-        if (!window.jXHR){
-            var jxhr = document.createElement('script');
-            jxhr.type = 'text/javascript';
-            jxhr.src = '/javascripts/libs/jXHR.js';
-            var s = document.getElementsByTagName('script')[0];
-            s.parentNode.insertBefore(jxhr, s);
-        }
-
-        github.showRepos({
-            user: 'engili',
-            count: 0,
-            skip_forks: true,
-            target: '#gh_repos'
-        });
-    });
-  </script>
-  <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-
-
-
-  
-</aside>
-
-
-    </div>
   </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2018 - limengtian -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</div>
+
+        </div>
+      </div>
+    </div>
+    <footer role="contentinfo"><div class="container">
+    <p class="text-muted credits">
+  Copyright &copy; 2018 - limengtian<br>
+  <small>
+      <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>,
+      <span class="credit">customized with <a href="https://github.com/bhrigu123/abacus">abacus theme</a></span>.
+  </small>
 </p>
 
+</div>
 </footer>
-  
+    
 
 
 
@@ -304,8 +446,9 @@ __weak typedef(someClass) weakClass = someClass;
 
 
 
+<script src="/assets/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/javascripts/modernizr.js"></script>
 
 
-
-</body>
+  </body>
 </html>
