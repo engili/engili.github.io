@@ -1,4 +1,0 @@
-User-agent: *
-Disallow: 
-
-Sitemap: http://engili.github.io/sitemap.xml 
