@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url>
+<loc>http://engili.github.io/blog/2017/05/14/oc-ios-tips/</loc>
+<lastmod>2017-05-14T06:58:39+08:00</lastmod>
+</url>
+<url>
 <loc>http://engili.github.io/blog/2017/03/10/oc-static/</loc>
 <lastmod>2017-03-10T20:48:39+08:00</lastmod>
 </url>
@@ -12,5 +16,8 @@
 </url>
 <url>
 <loc>http://engili.github.io/blog/categories/objective-c/</loc>
+</url>
+<url>
+<loc>http://engili.github.io/blog/categories/ios/</loc>
 </url>
 </urlset>

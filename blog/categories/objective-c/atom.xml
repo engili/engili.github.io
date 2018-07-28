@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objective-c | Octopress Blog]]></title>
   <link href="http://engili.github.io/blog/categories/objective-c/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-07-28T11:40:44+08:00</updated>
+  <updated>2018-07-28T14:47:03+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,7 +18,10 @@
     <link href="http://engili.github.io/blog/2017/03/10/oc-static/"/>
     <updated>2017-03-10T20:48:39+08:00</updated>
     <id>http://engili.github.io/blog/2017/03/10/oc-static</id>
-    <content type="html"><![CDATA[<ol>
+    <content type="html"><![CDATA[<!-- readmore -->
+
+
+<ol>
 <li>.m 文件里定义static 常量</li>
 </ol>
 
