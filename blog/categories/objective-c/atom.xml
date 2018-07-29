@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Objective-c | Octopress Blog]]></title>
   <link href="http://engili.github.io/blog/categories/objective-c/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-07-28T14:47:03+08:00</updated>
+  <updated>2018-07-29T11:45:08+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -18,13 +18,10 @@
     <link href="http://engili.github.io/blog/2017/03/10/oc-static/"/>
     <updated>2017-03-10T20:48:39+08:00</updated>
     <id>http://engili.github.io/blog/2017/03/10/oc-static</id>
-    <content type="html"><![CDATA[<!-- readmore -->
+    <content type="html"><![CDATA[<!-- more -->
 
 
-<ol>
-<li>.m 文件里定义static 常量</li>
-</ol>
-
+<h3>1. .m 文件里定义static 常量</h3>
 
 <pre><code class="obj-c">// .m
 
@@ -37,10 +34,11 @@ static const int kConstant = xxx;
 
 <ul>
 <li>该文件里全局可见 (准确说应该是compilation unit，而不是文件)</li>
-<li><p>外部文件不能通过extern引用</p></li>
-<li><p>.m 文件里定义static 变量</p></li>
+<li>外部文件不能通过extern引用</li>
 </ul>
 
+
+<h3>2. .m 文件里定义static 变量</h3>
 
 <pre><code class="obj-c">// .m
 
@@ -63,10 +61,11 @@ static int intVar = xxx;
 <li>因为一般情况下，OC里的类以文件为单位，划分。通过给类添加，get 和 set的类方法，去实际操作这个全局变量，就可以实现类似类变量的机制。</li>
 </ul>
 </li>
-<li><p>外部文件不能通过extern引用</p></li>
-<li><p>.h 里定义static 常量</p></li>
+<li>外部文件不能通过extern引用</li>
 </ul>
 
+
+<h3>3. .h 里定义static 常量</h3>
 
 <pre><code class="obj-c">// .h
 
@@ -79,10 +78,11 @@ static const int kConstatnt = 1;
 <li>这里static，意味着，每一个包含这个头文件的源文件里，会包含一个这个常量的拷贝，但与此同时，链接时，并不会出现符号冲定义的错误。</li>
 <li>外部文件，可以通过引用该头文件，使用这个全局常量，但这里获得的是该常量的一份，拷贝，因为常量并不能修改，所以获取的是拷贝，也没有太多问题</li>
 <li>如果这里，去掉这个static，外部文件引用这个头文件，就会出现符号重定义的链接错误</li>
-<li><p>但是这种实现全局常量的方式不太好</p></li>
-<li><p>.h 里定义static 变量</p></li>
+<li>但是这种实现全局常量的方式不太好</li>
 </ul>
 
+
+<h3>4. .h 里定义static 变量</h3>
 
 <pre><code class="obj-c">// .h
 static int intVar;
@@ -128,9 +128,14 @@ static int a = 0;  //定义了一个全局变量
 </code></pre>
 
 <ul>
-<li><p>所以这种方式，定义的变量，并不是真正的全局变量。</p></li>
-<li><p>更优雅的方式，定义全局变量和全局常量</p></li>
-<li><p>在.m文件里，定义全局变量，和全局常量，不用static修饰</p></li>
+<li>所以这种方式，定义的变量，并不是真正的全局变量。</li>
+</ul>
+
+
+<h3>5. 更优雅的方式，定义全局变量和全局常量</h3>
+
+<ul>
+<li>在.m文件里，定义全局变量，和全局常量，不用static修饰</li>
 <li>在.h文件里，用extern声明这些全局变量和全局</li>
 <li>其他文件引用这个.h来使用相应的常量和变量。</li>
 </ul>
