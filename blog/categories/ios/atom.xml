@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Octopress Blog]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-07-29T11:45:08+08:00</updated>
+  <updated>2018-08-04T15:47:24+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -14,127 +14,515 @@
 
   
   <entry>
-    <title type="html"><![CDATA[iOS Tips]]></title>
-    <link href="http://engili.github.io/blog/2017/05/14/oc-ios-tips/"/>
-    <updated>2017-05-14T06:58:39+08:00</updated>
-    <id>http://engili.github.io/blog/2017/05/14/oc-ios-tips</id>
+    <title type="html"><![CDATA[CoreData 学习笔记]]></title>
+    <link href="http://engili.github.io/blog/2017/08/20/coredata-note/"/>
+    <updated>2017-08-20T18:41:18+08:00</updated>
+    <id>http://engili.github.io/blog/2017/08/20/coredata-note</id>
     <content type="html"><![CDATA[<!-- more -->
 
 
-<h3>1.在block执行期间，weak引用强持有</h3>
+<h3>CoreData 学习笔记</h3>
 
-<pre><code class="obj-c">__weak typedef(someClass) weakClass = someClass;
-[xxx setHandler:^{
-    typedef(someClass) strongClass = weakClass;
-    [strongClass doSomething];
-}];
-</code></pre>
+<h4>1.Core Data Stack</h4>
+
+<h5>iOS 10 以前创建CoreDataStack</h5>
+
+<h6>1 Data Model</h6>
+
+<p>Data Model 是Xcode提供的一个可视化Model 编辑器，可以创建实例，定义实例属性，定义实例之间的关系，以及创建一些常用的FetchRequst</p>
+
+<h6># 1.1 新建DataModel 文件</h6>
+
+<p><img src="https://github.com/engili/engili.github.io/raw/master/images/coredata-notes-01.png" alt="" /></p>
+
+<h6># 1.2 添加实例&amp;定义属性</h6>
+
+<p><img src="https://github.com/engili/engili.github.io/raw/master/images/coredata-notes-02.png" alt="" /></p>
+
+<h6>## 1.21 属性类型（Attribute Type）</h6>
 
 <ul>
-<li>为了避免强引用环，在使用闭包时，一些引入的对象，都使用不增加引用计数的<code>weak</code>指针持有，但当使用的时候，为了避免对象被提前释放，可以用<code>strong</code>指针持有，可以确保在使用该对象的时候，不会被释放。</li>
-<li>使用不带修饰的指针变量，默认是带有<code>__strong</code>修饰</li>
+<li>Integer16 Integer32 Integer64</li>
+<li>Decimal Float Double</li>
+<li>String</li>
+<li>Boolean</li>
+<li>Date</li>
+<li>Binary Data</li>
+<li>Transformable</li>
 </ul>
 
 
-<h3>2. UISwitch 重复触发action方法</h3>
+<p>其中，<code>Binary Data</code> 为二进制数据，在Xcode右侧Model Inspector 中，有一个可以设置Allows External Storage的选项，CoreData会智能选择是存储文件的二进制数据，还是存储文件URL</p>
 
-<p>理论上，只用当用户点击了<code>UISwitch</code>,才会触发，<code>vauleChange</code> 的action方法 但是实际开发中，发现iOS10机型上，如果在action方法里调用了-<code>setOn:animated:</code>或者<code>setOn:</code> ，就会多触发一次action方法。</p>
+<p><code>Transformable</code> 可以为任意遵循NSCoding协议的对象类型</p>
 
-<h4>解决方案</h4>
+<h6># 1.3 添加关系（relationShip）</h6>
 
-<ol>
-<li>避免在valueChange方法里调用-setOn:animated:或setOn:</li>
-<li>如果无法避免，使用dispatch_async,在主队列执行这些方法（这个方法有个缺点，比较卡的手机会看到闪动的现象）</li>
-</ol>
+<ul>
+<li>to one （一对一）</li>
+<li>to Manay （一对多）</li>
+</ul>
 
 
-<pre><code class="obj-c">- (IBAction)valueChanged:(id)sender {
-    ...
-    dispatch_async(dispatch_get_main_queue(), ^{
-       [sender setOn:YES];
+<p>这里再定义一个实例，主人（master），设定主人和狗子的关系为一对多，关系图如下：</p>
+
+<p><img src="https://github.com/engili/engili.github.io/raw/master/images/coredata-notes-03.png" alt="" /></p>
+
+<h6>2 CoreDataStack</h6>
+
+<p>CoreDataStck，是自定义的一个CoreData 的栈对象，为一个单例，可以通过它，初始化项目的CoreData，以及获取到Context，对数据库进行增删改查等操作</p>
+
+<h6># 2.1 单例</h6>
+
+<pre><code class="obj-c">//  CoreDataStack.h
+
+#import &lt;Foundation/Foundation.h&gt;
+#import &lt;CoreData/CoreData.h&gt;
+
+@interface CoreDataStack : NSObject
+
++ (instancetype)sharedInstance;
+
+@end 
+</code></pre>
+
+<pre><code class="obj-c">//  CoreDataStack.m
+
+#import "CoreDataStack.h"
+
+@implementation CoreDataStack
+
++ (instancetype)sharedInstance {
+    static CoreDataStack *stack;
+    static dispatch_once_t onceToken;
+    dispatch_once(&amp;onceToken, ^{
+        stack = [[CoreDataStack alloc] init];
     });
-    ...
+
+    return stack;
+}
+@end
+</code></pre>
+
+<h6>3 NSManagedModel</h6>
+
+<p>The NSManagedObjectModel represents each object type in your app’s data model, the properties they can have, and the relationship between them.</p>
+
+<pre><code class="obj-c">//  CoreDataStack.m
+
+@interface CoreDataStack ()
+
+@property (nonatomic, strong) NSManagedObjectModel *managedModel;
+
+@end
+
+......
+- (NSManagedObjectModel *)managedModel {
+    if (!_managedModel) {
+        NSURL *momdURL = [[NSBundle mainBundle]URLForResource:@"Model" withExtension:@"momd"];
+        _managedModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:momdURL];
+    }
+    return _managedModel;
 }
 </code></pre>
 
-<p>3.iOS 10 以下机型不会出现这个问题，iOS11 待验证</p>
+<h6>4 NSPersistentStoreCoordinator</h6>
 
-<h4>参考：</h4>
+<h6># 4.1 NSpersistentStore</h6>
 
-<p><a href="https://stackoverflow.com/questions/39566361/uiswitch-seton-animated-does-not-work-as-document">UISwitch setOn(:, animated:) does not work as document</a></p>
+<h6>## atomic vs nonatomic</h6>
 
-<h3>3. Xcode8 生成CoreData NSManagedObject 报Duplicate symbol error</h3>
+<p>An atomic persistent store needs to be completely deserialized and loaded into memory before you can make any read or write operations. In contrast, a non- atomic persistent store can load chunks of itself onto memory as needed.</p>
 
-<p>上周写CoreData的时候，当使用Editor的Create NSManagedObject SubClass 生成好对应Entity的ManagedObject后，编译的时候报Duplicate symbol error，意思是符号重复定义的错误，一脸蒙蔽好吧，都是系统生成的，我什么都没有做=。=</p>
-
-<p>然后网上搜了一下，搜到了问题的原因和解决方案 <a href="http://stackoverflow.com/questions/40460307/duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link">duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link xcode-beta-8-cant-create-core-data</a></p>
-
-<h4>原因</h4>
-
-<p>Xcode 8 的.xcdatamodeId 文件会自动生成那些Entity的类，当你在Editor->Create NSManagedObject SubClass 再次生成这些Entity类的时候，编译的时候，就会有符号重定义的错误</p>
-
-<h4>解决方案</h4>
+<h6>## type</h6>
 
 <ul>
-<li>当你不需要自己修改NSManagedObject 文件时候，就使用Xcode生成的文件，直接引用头文件就好。</li>
-<li>当你需要自己修改NSManagedObject 文件，在Xcode中选中.xcdatamodeId 文件 在右侧属性栏中， <del>把Tools Version 修改成小于8.0的版本 ，然后就可以使用Editor 生成NSManagedObject类了。</del> 修改Entity Inspector 里Class对应的Codegen 如下图：
-<img src="https://github.com/engili/engili.github.io/raw/master/images/ios-tips-01.png" alt="" /></li>
+<li>NSSQLiteStoreType (nonatomic)</li>
+<li>NSXMLStoreType (atomic)</li>
+<li>NSBinaryStoreType (atomic)</li>
+<li>NSInMemoryStoreType (atomic)</li>
 </ul>
 
 
-<h3>4. Swift 单例</h3>
+<h6># 4.2 NSPersistentStoreCoordinator</h6>
 
-<h4>使用类常量</h4>
+<p>the bridge between the managed object model and the persistent store</p>
 
-<pre><code class="swift">class MTNetWorkManager {
+<ul>
+<li>通过managed object model初始化</li>
+<li>通过addPersistentStoreWithType:configuration:URL:options:error: 添加persistent store</li>
+</ul>
 
-static let shared = MTNetWorkManager(baseURL: API.baseURL)
 
-let baseURL: URL
+<pre><code class="obj-c">//  CoreDataStack.m
 
-private init(baseURL: URL) {
-self.baseURL = baseURL
+@interface CoreDataStack ()
+
+@property (nonatomic, strong) NSPersistentStoreCoordinator *psc;
+
+@end
+
+......
+
+- (NSPersistentStoreCoordinator *)psc {
+    if (!_psc) {
+        _psc = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:self.managedModel];
+
+        NSURL *URL = [[self documentURL] URLByAppendingPathComponent:@"Model.sqlite"];
+        NSError *error;
+        if (![_psc addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:URL options:nil error:&amp;error]) {
+            NSLog(@"addPersistentStoreWithType Error: %@",[error localizedDescription]);
+        }
+    }
+    return _psc;
 }
+
+- (NSURL *)documentURL {
+    return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
-//外部调用 MTNetWorkManager.shared
 </code></pre>
 
-<h4>使用类方法</h4>
+<h6>5 NSManagedObjectContext</h6>
 
-<pre><code class="swift">class MTNetWorkManager {
+<p>Context是唯一暴露给外界，供外界使用的接口</p>
 
-static private let sharedInstance = {
+<ul>
+<li>context an in-memory scratchpad for managed objects.</li>
+<li>any change you make won’t affect the underlying data on disk until you call -save: of context</li>
+<li>context manages the lifecycle of the objects that it creates or fetches.</li>
+<li>A managed object cannot exist without an associated context.</li>
+<li>once a managed object has associated with a particular context, it will remain associated with the same context for the duration of its lifecycle.</li>
+<li>context and managed object is not thread safe</li>
+</ul>
 
-let shared = MTNetWorkManager(baseURL: API.baseURL)
 
-//Configure 可以做一些初始化配置
+<pre><code class="obj-c">//  CoreDataStack.h
 
-return shared
+@interface CoreDataStack : NSObject
 
-}()
+@property (nonatomic, strong, readonly) NSManagedObjectContext *managedContext;
 
-let baseURL: URL
+@end
+</code></pre>
 
-private init(baseURL: URL) {
-self.baseURL = baseURL
+<pre><code class="obj-c">//  CoreDataStack.m
+
+@interface CoreDataStack ()
+
+@property (nonatomic, strong, readwrite) NSManagedObjectContext *managedContext;
+
+@end
+
+- (NSManagedObjectContext *)managedContext {
+    if (!_managedContext) {
+        _managedContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        _managedContext.persistentStoreCoordinator = self.psc;
+    }
+    return _managedContext;
+}
+</code></pre>
+
+<h6>6 Save Context</h6>
+
+<pre><code class="obj-c">- (void)saveContext {
+    NSError *error;
+    if ([self.managedContext hasChanges] &amp;&amp; ![self.managedContext save:&amp;error]) {
+        NSLog(@"NSManagedObjectContext Save Error: %@",[error localizedDescription]);
+    }
+}
+</code></pre>
+
+<h5>iOS 10 以后创建CoreDataStack</h5>
+
+<p>iOS 10 以后，苹果系统为我们封装了一个CoreData Stack 的类，叫NSPersistentContainer,可以通过它的属性viewContext获取到NSManagedObjectContext</p>
+
+<pre><code class="obj-c">@property (readonly, strong) NSPersistentContainer *persistentContainer;
+
+- (NSPersistentContainer *)persistentContainer {
+    // The persistent container for the application. This implementation creates and returns a container, having loaded the store for the application to it.
+    @synchronized (self) {
+        if (_persistentContainer == nil) {
+            _persistentContainer = [[NSPersistentContainer alloc] initWithName:@"testCoreData"];
+            [_persistentContainer loadPersistentStoresWithCompletionHandler:^(NSPersistentStoreDescription *storeDescription, NSError *error) {
+                if (error != nil) {
+                    // Replace this implementation with code to handle the error appropriately.
+                    // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+
+                    /*
+                     Typical reasons for an error here include:
+                     * The parent directory does not exist, cannot be created, or disallows writing.
+                     * The persistent store is not accessible, due to permissions or data protection when the device is locked.
+                     * The device is out of space.
+                     * The store could not be migrated to the current model version.
+                     Check the error message to determine what the actual problem was.
+                    */
+                    NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+                    abort();
+                }
+            }];
+        }
+    }
+
+    return _persistentContainer;
 }
 
-
-static func shared() {
-return sharedInstance
+- (void)saveContext {
+    NSManagedObjectContext *context = self.persistentContainer.viewContext;
+    NSError *error = nil;
+    if ([context hasChanges] &amp;&amp; ![context save:&amp;error]) {
+        // Replace this implementation with code to handle the error appropriately.
+        // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
+        NSLog(@"Unresolved error %@, %@", error, error.userInfo);
+        abort();
+    }
 }
+</code></pre>
+
+<h4>2.创建NSManagedObject对象</h4>
+
+<p>可视化Data Model文件在程序中，对应了NSManagedModel对象，这些Entity在程序中，所对应的对象就是NSManagedObject (当然其实并不完全对等，可以先这么理解)</p>
+
+<h5>Document</h5>
+
+<blockquote><p>NSManagedObject is a generic class that implements all the basic behavior required of a Core Data model object. It is not possible to use instances of direct subclasses of NSObject (or any other class not inheriting from NSManagedObject) with a managed object context. You may create custom subclasses of NSManagedObject, although this is not always required. If no custom logic is needed, a complete Object graph can be formed with NSManagedObject instances.</p></blockquote>
+
+<p>这里大概有三个要点</p>
+
+<ul>
+<li>NSManagedObject 代表了Data Model中的对象</li>
+<li>NSManagedObject 需要和 NSManagedObjectContext 结合使用才有意义</li>
+<li>NSManagedObject 满足所有你自定义的model 对象需求，通过KVC 去访问相应的属性</li>
+</ul>
+
+
+<h5>生成NSManagedObject子类</h5>
+
+<p>虽然通过KVC就可以访问NSManagedObject所有的属性，但这样使用起来不是很方便。</p>
+
+<p>在Xcode Data Model Editor 中选中你要创建NSManagedObject子类的实例，在右侧Data Model Inspector中选择Codegen</p>
+
+<p><img src="https://github.com/engili/engili.github.io/raw/master/images/coredata-notes-04.png" alt="" /></p>
+
+<ul>
+<li>Manual/None
+
+<ul>
+<li>Manual/None is the default, and previous behavior; in this case you should implement your own subclass or use NSManagedObject.</li>
+</ul>
+</li>
+</ul>
+
+
+<p>这个是iOS10以前的默认行为，需要我们手动通过Xcode Editor-> Create NSManagedObject SubClass&hellip; 生成ClassName+CoreDataClass 文件以及 ClassName+CoreDataGeneratedProperties 其中前者，是类的定义，以及类行为定义，后者通过category 定义了类的属性（注：Objective-C中Category定义属性不支持生成成员变量，但可以生成get set 方法，CoreData属性通过@dynamic修饰，表示，运行时生成 get set 方法）</p>
+
+<p>当每次修改，data model的时候，重新通过以上方法，生成NSManagedObject对象，系统只会覆盖ClassName+CoreDataGeneratedProperties文件，而不会修改ClassName+CoreDataClass 文件。
+- Category/Extension.
+    - Category/Extension generates a class extension in a file named like ClassName+CoreDataGeneratedProperties. You need to declare/implement the main class (if in Obj-C, via a header the extension can import named ClassName.h).</p>
+
+<p>一般情况下，因为我们不需要修改属性Category的定义，而只需要修改类行为的定义，所以这个选项，就直接不对开发者暴露Category 文件，当你修改了DataModel的时候，就可以自动同步最新的代码
+- Class Definition</p>
+
+<pre><code>- Class Definition generates subclass files named like ClassName+CoreDataClass as well as the files generated for Category/Extension.
+</code></pre>
+
+<p>当我们也不需要为NSManagedObject定义行为的时候，我们就可以选中这个选项，然后直接在项目里引用头文件就可以直接使用。</p>
+
+<h5>数据库 增删改查</h5>
+
+<h6>增</h6>
+
+<p>增加一个数据库对象，首先，需要创建一个NSEntityDescription,前面说 Data Model Editor 里的实例并不完全和NSManagedObject对等，就是因为创建NSManagedObject对象，还需要entity相关的描述对象，这个对象才与实例对等。</p>
+
+<pre><code class="obj-c">NSEntityDescription *entity = [NSEntityDescription entityForName:@"Doge" inManagedObjectContext:_context];
+Doge *doge = [[Doge alloc] initWithEntity:entity insertIntoManagedObjectContext:_context];
+doge.name = @"xxx";
+...
+...
+//注意，这里并没有实际把对象存入数据库，实际存入需要调用NSManagedObjectContext 的save:方法
+[_context save:nil];
+</code></pre>
+
+<h6>改</h6>
+
+<p>直接访问NSManagedObject属性的set方法，就可以修改属性，同时，也只有当调用了NSManagedObjectContext 的-save:方法后才能存入实际的存储文件中</p>
+
+<h6>删</h6>
+
+<p>删除调用NSManagedObjectContext的-deleteObject:方法，然后调用-save:方法</p>
+
+<pre><code class="obj-c">Doge *doge = ...
+ [_context deleteObject:doge];
+ [_context save:nil]
+</code></pre>
+
+<h6>查</h6>
+
+<h6># 1. NSFetchRequest</h6>
+
+<h6>## resultType</h6>
+
+<ul>
+<li>NSManagedObjectResultType</li>
+<li>NSCountResultType</li>
+<li>NSDictionaryResultType</li>
+<li>NSManagedObjectIDResultType</li>
+</ul>
+
+
+<p>其中默认属性为<code>NSManagedObjectResultType</code></p>
+
+<h6>## NSManagedObjectResultType</h6>
+
+<p>NSManagedObjectResultType是NSFetchRequest 的默认属性，执行查询后，数组里每个元素，就是NSFetchRequest 对应的NSManagedObject对象。</p>
+
+<pre><code class="obj-c">
+NSFetchRequest *fetchRequest =  [NSFetchRequest fetchRequestWithEntityName:@"Doge"];
+//默认就为NSManagedObjectResultType
+//fetchRequest.resultType = NSManagedObjectResultType;
+NSArray *result = [_context executeFetchRequest:fetchRequest error:nil];
+//这里数组的元素为Doge对象
+</code></pre>
+
+<h6>## NSCountResultType</h6>
+
+<p>NSCountResultType执行查询后，返回的数组，包含一个对象，NSNmber.</p>
+
+<pre><code class="obj-c">NSFetchRequest *fetchRequest =  [NSFetchRequest fetchRequestWithEntityName:@"Doge"];
+fetchRequest.resultType = NSCountResultType;
+NSArray *result = [_context executeFetchRequest:fetchRequest error:nil];
+//这里数组的元素为 NSNumber ，一般数组只有一个元素
+if ([result count] &gt; 0){
+    NSInteger count = [[results objectAtIndex:0] integerValue];
+}
+</code></pre>
+
+<h6>## NSDictionaryResultType</h6>
+
+<p>NSDictionaryResultType 顾名思义，是返回一个字典，除了设置fetchRequest.resultType,还需要设置fetchRequest.propertiesToFetch</p>
+
+<h6>## NSManagedObjectIDResultType</h6>
+
+<p>返回唯一标识</p>
+
+<p>Prior to iOS 5, fetching by ID was popular because NSManagedObjectID is thread-safe and using it helped developers implement the thread confinement concurrency model. Now that thread confinement has been deprecated in favor of more modern concurrency models, there’s little reason to fetch by object ID anymore.</p>
+
+<h6># 2. NSPredicate</h6>
+
+<p>The NSPredicate class is used to define logical conditions used to constrain a search either for a fetch or for in-memory filtering.</p>
+
+<p>NSFetchRequest 支持使用谓词来作为，查询筛选条件</p>
+
+<pre><code class="obj-c">NSFetchRequest *fetchRequest =  [NSFetchRequest fetchRequestWithEntityName:@"Doge"];
+fetchRequestWithEntityName:@"Doge"];
+fetchRequest.predicate = [NSPredicate predicateWithFormat:@"age &gt; 5"];
+NSArray *result = [_context executeFetchRequest:fetchRequest error:nil];
+</code></pre>
+
+<h6># 3. NSSortDescriptor</h6>
+
+<p>除了使用支持使用谓词，NSFetchRequest 还支持使用NSSortDescriptor 进行排序</p>
+
+<pre><code class="obj-c">NSFetchRequest *fetchRequest =  [NSFetchRequest fetchRequestWithEntityName:@"Doge"];
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"age" ascending:YES];
+    fetchRequest.sortDescriptors = @[sortDescriptor];
+
+    NSArray *result = [_context executeFetchRequest:fetchRequest error:nil];
+</code></pre>
+
+<h6># 4. NSAsynchronousFetchRequest</h6>
+
+<p>NSFetchRequest 是同步查询的，CoreData 也提供了异步查询的类NSAsynchronousFetchRequest,它通过一个 block ，将数据异步返回，注意，查询方法使用的是 -executeRequest:error:</p>
+
+<pre><code class="obj-c">NSFetchRequest *fetchRequest =  [NSFetchRequest fetchRequestWithEntityName:@"Doge"];
+NSAsynchronousFetchRequest *asyncFetchRequest = [[NSAsynchronousFetchRequest alloc] initWithFetchRequest:fetchRequest completionBlock:^(NSAsynchronousFetchResult * _Nonnull results) {
+    NSLog(@"%@",results);
+}];
+[_context executeRequest:asyncFetchRequest error:nil];
+</code></pre>
+
+<h4>Demo</h4>
+
+<h5>添加数据</h5>
+
+<pre><code class="obj-c">- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    // Override point for customization after application launch.
+    [self importSeedJsonSeedIfNeeded];
+    return YES;
+}
+- (void)importSeedJsonSeedIfNeeded {
+
+    NSManagedObjectContext *context = [[MTCoreDataStack sharedInstance] managedContext];
+
+    NSFetchRequest * fetchRequest = [Master fetchRequest];
+    fetchRequest.resultType = NSCountResultType;
+
+    NSError *error;
+    NSArray *results = [context executeFetchRequest:fetchRequest error:&amp;error];
+    if (!error) {
+        if ([results count] &gt; 0) {
+            NSInteger masterCount = [[results objectAtIndex:0] integerValue];
+            if (masterCount &lt;= 0) {
+                [self importJsonSeed];
+            }
+        } else {
+            [self importJsonSeed];
+        }
+
+    }else {
+        [self importJsonSeed];
+    }
+
 }
 
-//外部调用 MTNetWorkManager.shared()
+- (void)importJsonSeed {
+    NSURL *jsonURL = [[NSBundle mainBundle] URLForResource:@"seed" withExtension:@"json"];
+
+    NSError *error;
+    NSData *jsonData = [NSData dataWithContentsOfURL:jsonURL options:0 error:&amp;error];
+
+    if (!error) {
+        NSDictionary *jsonDict = [NSJSONSerialization JSONObjectWithData:jsonData options:0 error:&amp;error];
+        if (!error) {
+
+            NSManagedObjectContext *context = [[MTCoreDataStack sharedInstance] managedContext];
+
+            NSEntityDescription *masterEntity = [NSEntityDescription entityForName:@"Master" inManagedObjectContext:context];
+            NSEntityDescription *dogeEntity = [NSEntityDescription entityForName:@"Doge" inManagedObjectContext:context];
+
+            NSDictionary *masterDict = jsonDict[@"master"];
+            if (![masterDict isKindOfClass:[NSDictionary class]]) {
+                return;
+            }
+
+            Master *master = [[Master alloc] initWithEntity:masterEntity insertIntoManagedObjectContext:context];
+            master.name = masterDict[@"name"];
+            master.age = [masterDict[@"age"] integerValue];
+
+            NSArray *doges = jsonDict[@"doges"];
+
+            for (NSDictionary *dogeDict in doges) {
+                if (![dogeDict isKindOfClass:[NSDictionary class]]) {
+                    continue;
+                }
+                Doge *doge = [[Doge alloc] initWithEntity:dogeEntity insertIntoManagedObjectContext:context];
+                doge.name = dogeDict[@"name"];
+                doge.age = [dogeDict[@"age"] integerValue];
+                doge.master = master; //因为在DataModel 里设置了 inverse， 所以master 和 doge可以相互关联上
+            }
+            //一定要调用 save 方法，才能真正的将文件存入数据库
+            [[MTCoreDataStack sharedInstance] saveContext];
+        }
+    }
+}
 </code></pre>
 ]]></content>
   </entry>
   
   <entry>
     <title type="html"><![CDATA[LayoutMargin & preservesSuperviewLayoutMargins 学习笔记]]></title>
-    <link href="http://engili.github.io/blog/2017/05/14/layoutMagrin-preservesSuperviewLayoutMargins-notes/"/>
-    <updated>2017-05-14T06:58:39+08:00</updated>
-    <id>http://engili.github.io/blog/2017/05/14/layoutMagrin-preservesSuperviewLayoutMargins-notes</id>
+    <link href="http://engili.github.io/blog/2017/08/05/layoutMagrin-preservesSuperviewLayoutMargins-notes/"/>
+    <updated>2017-08-05T13:30:51+08:00</updated>
+    <id>http://engili.github.io/blog/2017/08/05/layoutMagrin-preservesSuperviewLayoutMargins-notes</id>
     <content type="html"><![CDATA[<!-- more -->
 
 
@@ -261,6 +649,123 @@ return sharedInstance
 <h3>思考</h3>
 
 <p>现在基本上弄清楚了，LayoutMargin和preservesSuperviewLayoutMargins属性，以及如何使用，但是对他们在自动布局的实际使用场景还是没有思考太清楚，没有明白苹果为什么会设置这两个属性，特别是preservesSuperviewLayoutMargins属性。 = =</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS Tips]]></title>
+    <link href="http://engili.github.io/blog/2017/05/14/oc-ios-tips/"/>
+    <updated>2017-05-14T06:58:39+08:00</updated>
+    <id>http://engili.github.io/blog/2017/05/14/oc-ios-tips</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h3>1.在block执行期间，weak引用强持有</h3>
+
+<pre><code class="obj-c">__weak typedef(someClass) weakClass = someClass;
+[xxx setHandler:^{
+    typedef(someClass) strongClass = weakClass;
+    [strongClass doSomething];
+}];
+</code></pre>
+
+<ul>
+<li>为了避免强引用环，在使用闭包时，一些引入的对象，都使用不增加引用计数的<code>weak</code>指针持有，但当使用的时候，为了避免对象被提前释放，可以用<code>strong</code>指针持有，可以确保在使用该对象的时候，不会被释放。</li>
+<li>使用不带修饰的指针变量，默认是带有<code>__strong</code>修饰</li>
+</ul>
+
+
+<h3>2. UISwitch 重复触发action方法</h3>
+
+<p>理论上，只用当用户点击了<code>UISwitch</code>,才会触发，<code>vauleChange</code> 的action方法 但是实际开发中，发现iOS10机型上，如果在action方法里调用了-<code>setOn:animated:</code>或者<code>setOn:</code> ，就会多触发一次action方法。</p>
+
+<h4>解决方案</h4>
+
+<ol>
+<li>避免在valueChange方法里调用-setOn:animated:或setOn:</li>
+<li>如果无法避免，使用dispatch_async,在主队列执行这些方法（这个方法有个缺点，比较卡的手机会看到闪动的现象）</li>
+</ol>
+
+
+<pre><code class="obj-c">- (IBAction)valueChanged:(id)sender {
+    ...
+    dispatch_async(dispatch_get_main_queue(), ^{
+       [sender setOn:YES];
+    });
+    ...
+}
+</code></pre>
+
+<p>3.iOS 10 以下机型不会出现这个问题，iOS11 待验证</p>
+
+<h4>参考：</h4>
+
+<p><a href="https://stackoverflow.com/questions/39566361/uiswitch-seton-animated-does-not-work-as-document">UISwitch setOn(:, animated:) does not work as document</a></p>
+
+<h3>3. Xcode8 生成CoreData NSManagedObject 报Duplicate symbol error</h3>
+
+<p>上周写CoreData的时候，当使用Editor的Create NSManagedObject SubClass 生成好对应Entity的ManagedObject后，编译的时候报Duplicate symbol error，意思是符号重复定义的错误，一脸蒙蔽好吧，都是系统生成的，我什么都没有做=。=</p>
+
+<p>然后网上搜了一下，搜到了问题的原因和解决方案 <a href="http://stackoverflow.com/questions/40460307/duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link">duplicate-symbol-error-when-adding-nsmanagedobject-subclass-duplicate-link xcode-beta-8-cant-create-core-data</a></p>
+
+<h4>原因</h4>
+
+<p>Xcode 8 的.xcdatamodeId 文件会自动生成那些Entity的类，当你在Editor->Create NSManagedObject SubClass 再次生成这些Entity类的时候，编译的时候，就会有符号重定义的错误</p>
+
+<h4>解决方案</h4>
+
+<ul>
+<li>当你不需要自己修改NSManagedObject 文件时候，就使用Xcode生成的文件，直接引用头文件就好。</li>
+<li>当你需要自己修改NSManagedObject 文件，在Xcode中选中.xcdatamodeId 文件 在右侧属性栏中， <del>把Tools Version 修改成小于8.0的版本 ，然后就可以使用Editor 生成NSManagedObject类了。</del> 修改Entity Inspector 里Class对应的Codegen 如下图：
+<img src="https://github.com/engili/engili.github.io/raw/master/images/ios-tips-01.png" alt="" /></li>
+</ul>
+
+
+<h3>4. Swift 单例</h3>
+
+<h4>使用类常量</h4>
+
+<pre><code class="swift">class MTNetWorkManager {
+
+static let shared = MTNetWorkManager(baseURL: API.baseURL)
+
+let baseURL: URL
+
+private init(baseURL: URL) {
+self.baseURL = baseURL
+}
+}
+//外部调用 MTNetWorkManager.shared
+</code></pre>
+
+<h4>使用类方法</h4>
+
+<pre><code class="swift">class MTNetWorkManager {
+
+static private let sharedInstance = {
+
+let shared = MTNetWorkManager(baseURL: API.baseURL)
+
+//Configure 可以做一些初始化配置
+
+return shared
+
+}()
+
+let baseURL: URL
+
+private init(baseURL: URL) {
+self.baseURL = baseURL
+}
+
+
+static func shared() {
+return sharedInstance
+}
+}
+
+//外部调用 MTNetWorkManager.shared()
+</code></pre>
 ]]></content>
   </entry>
   
