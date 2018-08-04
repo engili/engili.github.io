@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ios | Octopress Blog]]></title>
   <link href="http://engili.github.io/blog/categories/ios/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-08-04T15:47:24+08:00</updated>
+  <updated>2018-08-04T17:30:34+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -12,6 +12,399 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[UIKit Animations 学习笔记]]></title>
+    <link href="http://engili.github.io/blog/2017/08/20/uikit-animations-note/"/>
+    <updated>2017-08-20T18:41:18+08:00</updated>
+    <id>http://engili.github.io/blog/2017/08/20/uikit-animations-note</id>
+    <content type="html"><![CDATA[<!-- more -->
+
+
+<h3>UIKit Animations 学习笔记</h3>
+
+<h4>1. UIView 可动画属性 (Animatable Property)</h4>
+
+<ul>
+<li>frame
+
+<ul>
+<li>当transform 属性不为identity时，frame是未定义的，使用bounds或center做动画</li>
+</ul>
+</li>
+<li>bounds</li>
+<li>center</li>
+<li>transform</li>
+<li>alpha</li>
+<li>backgroundColor</li>
+<li><del>contentStretch (iOS 7.0弃用）</del>
+
+<ul>
+<li><del>Modify this property to change the way the view’s contents are stretched to fill the available space.</del></li>
+</ul>
+</li>
+</ul>
+
+
+<h4>2. Animations Block-Based Methods</h4>
+
+<p><code>class func animate(withDuration duration: TimeInterval, animations: @escaping () -&gt; Void)</code>
+- 这个方法使用curveEaseInOut和transitionNone选项，动画期间动画的View不响应用户交互</p>
+
+<p><code>class func animate(withDuration duration: TimeInterval, animations: @escaping () -&gt; Void, completion: ((Bool) -&gt; Void)? = nil)</code>
+- completion,如果duration值是0，block会在下一个runloop cycle被调用</p>
+
+<p><code>class func animate(withDuration duration: TimeInterval, delay: TimeInterval, options: UIViewAnimationOptions = [], animations: @escaping () -&gt; Void, completion: ((Bool) -&gt; Void)? = nil)</code>
+- options 可以设置一个或者多个，以数组的形式</p>
+
+<h5>2.1 UIViewAnimationOptions</h5>
+
+<h6>2.1.1 常规属性（可以设置多个）</h6>
+
+<ul>
+<li>layoutSubviews
+
+<ul>
+<li>layout子View，让他们随父view一起动画
+必须重写view的LayoutSubViews方法</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="obj-c">//  MTAnimateView.swift
+class MTAnimateView: UIView {
+    var subview: UIView!
+    override func layoutSubviews() {
+        let bounds = self.bounds
+        subview.frame = CGRect(x: 0, y: 0, width: bounds.width / 2, height: bounds.height / 2)
+    }
+}
+
+//UIViewController.swift
+class ViewController: UIViewController {
+    var redView: MTAnimateView!
+    //动画block 扩大bounds，长宽各100，不带`layoutSubviews` 动画效果就很奇怪
+    func animateWithLayoutSubViews() {
+        let orginBounds = redView.bounds
+        UIView.animate(withDuration: 1.0, delay: 0.0, options: .layoutSubviews, animations: {
+            self.redView.bounds = CGRect(x: orginBounds.origin.x, y: orginBounds.origin.y, width: orginBounds.width + 100, height: orginBounds.height + 100)
+        }) { (_) in
+            self.redView.bounds = orginBounds
+        }
+    }
+
+}
+</code></pre>
+
+<ul>
+<li>allowUserInteraction
+
+<ul>
+<li>响应动画时的用户交互</li>
+</ul>
+</li>
+<li>beginFromCurrentState
+
+<ul>
+<li>If this key is not present, all in-flight animations are allowed to finish before the new animation is started. If another animation is not in flight, this key has no effect.</li>
+</ul>
+</li>
+<li>`repeat`
+
+<ul>
+<li>重复动画</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="swift">UIView.animate(withDuration: 0.5, delay: 0.0, options: .repeat, animations: {
+            //重复执行3次
+            UIView.setAnimationRepeatCount(3)
+            ...
+        }, completion: nil)
+</code></pre>
+
+<ul>
+<li>autoreverse
+
+<ul>
+<li>与repeat配合使用，动画能回溯</li>
+</ul>
+</li>
+<li>overrideInheritedDuration
+
+<ul>
+<li>忽略嵌套动画的时间,使用自己设置的duration</li>
+</ul>
+</li>
+<li><p>overrideInheritedCurve</p>
+
+<ul>
+<li>忽略嵌套动画的时间曲线，使用自己设置的时间曲线</li>
+</ul>
+
+
+<p>  嵌套动画</p>
+
+<pre><code class="``swift">  UIView.animate(withDuration: 2.0, delay: 0.0, options: .curveEaseIn, animations: {
+      self.redView.center = redViewNewCenter
+      UIView.animate(withDuration: 0.5, delay: 0.0, options: [.curveEaseOut, .overrideInheritedDuration, .overrideInheritedCurve], animations: {
+          self.blueView.center = blueViewNewCenter
+      }, completion: { (_) in
+          self.blueView.center = blueViewOriginalCenter
+      })
+  }) { (_) in
+      self.redView.center = redViewOriginalCenter
+}
+</code></pre></li>
+<li><p>allowAnimatedContent</p>
+
+<ul>
+<li>动画的时候，重绘View，没设置这个选项的时候，动画都是使用的截图</li>
+</ul>
+</li>
+<li><p>showHideTransitionViews</p>
+
+<ul>
+<li>用于转场动画
+When present, this key causes views to be hidden or shown (instead of removed or added) when performing a view transition. Both views must already be present in the parent view’s hierarchy when using this key. If this key is not present, the to-view in a transition is added to, and the from-view is removed from, the parent view’s list of subviews.</li>
+</ul>
+</li>
+<li><p>overrideInheritedOptions</p></li>
+</ul>
+
+
+<h6>2.1.2 速度属性（可以设置一个）</h6>
+
+<ul>
+<li>curveEaseInOut
+
+<ul>
+<li>开始慢，中间加速，结尾慢</li>
+</ul>
+</li>
+<li>curveEaseIn
+
+<ul>
+<li>开始慢，一直加速</li>
+</ul>
+</li>
+<li>curveEaseOut
+
+<ul>
+<li>开始快，一直减速</li>
+</ul>
+</li>
+<li>curveLinear
+
+<ul>
+<li>均匀的</li>
+</ul>
+</li>
+</ul>
+
+
+<h6>2.1.3 转场动画属性 （可以设置一个）</h6>
+
+<ul>
+<li>transitionFlipFromLeft</li>
+<li>transitionFlipFromRight</li>
+<li>transitionCurlUp</li>
+<li>transitionCurlDown</li>
+<li>transitionCrossDissolve</li>
+<li>transitionFlipFromTop</li>
+<li>transitionFlipFromBottom</li>
+<li>preferredFramesPerSecond30</li>
+<li>preferredFramesPerSecond60</li>
+</ul>
+
+
+<h4>3. 嵌套动画</h4>
+
+<p>嵌套动画，是嵌套在其他动画block中的动画，他开始动画的时间和他父动画一样，并且继承父动画的时间，时间曲线和其他动画配置。 可以通过overrideInheritedDuration、overrideInheritedCurve 来使用自己的配置做动画</p>
+
+<h4>4.转场动画 (动画效果比较浮夸，用的较少)</h4>
+
+<p><code>class func transition(with view: UIView, duration: TimeInterval, options: UIViewAnimationOptions = [], animations: (() -&gt; Void)?, completion: ((Bool) -&gt; Void)? = nil)</code>
+- 在view中进行转场动画
+- 在animations中可以add、remove、hide、show view，如果想要其他动画效果，需要配置allowAnimatedContent
+示例
+<code>swift
+UIView.transition(with: redView, duration: 1.0, options: .transitionFlipFromLeft, animations: {
+            self.greenView.isHidden = false
+            self.blueView.isHidden = true
+        }, completion: nil)
+</code></p>
+
+<p><code>class func transition(from fromView: UIView, to toView: UIView, duration: TimeInterval, options: UIViewAnimationOptions = [], completion: ((Bool) -&gt; Void)? = nil)</code></p>
+
+<ul>
+<li>这个方法，从fromView转场到toView</li>
+<li>系统实现是直接从视图层级中移除，可以使用 showHideTransitionViews 只是显示和隐藏两个view</li>
+</ul>
+
+
+<h4>5.UIViewPropertyAnimator</h4>
+
+<h5>5.1.1 构造方法</h5>
+
+<p><code>convenience init(duration: TimeInterval, curve: UIViewAnimationCurve, animations: (() -&gt; Void)? = nil)</code></p>
+
+<ul>
+<li>构造函数 创建出的animator是inactive状态</li>
+<li>需要调用startAnimation()开始动画</li>
+</ul>
+
+
+<h5>5.1.2 添加动画</h5>
+
+<p><code>func addAnimations(_ animation: @escaping () -&gt; Void)
+</code></p>
+
+<ul>
+<li>可以通过这个方法，添加多个动画block</li>
+<li>inactive 状态下，添加的动画，进行时间是配置的时间，active状态下，添加的动画，进行的时间，是animtor剩余的时间</li>
+<li>stopped状态下，添加动画，会报错</li>
+</ul>
+
+
+<h5>5.1.3 添加动画结束回调</h5>
+
+<p><code>func addCompletion(_ completion: @escaping (UIViewAnimatingPosition) -&gt; Void)</code></p>
+
+<ul>
+<li>动画正常结束时，执行回调</li>
+<li>调用<code>stopAnimation(_:)</code> 参数设置true,执行回调</li>
+<li>调用<code>stopAnimation(_:)</code> 参数设置false,在<code>finishAnimation(at:)</code>调用后，执行回调</li>
+</ul>
+
+
+<h5>5.1.4 continueAnimation</h5>
+
+<p>调整一个暂停动画的 时间函数 和 时间</p>
+
+<p><code>
+func continueAnimation(withTimingParameters parameters: UITimingCurveProvider?, durationFactor: CGFloat)
+</code>
+- 调用该方法，需要animtor处于active且暂停的状态
+- 当状态处于非active,或动画正在进行，或者 isInterruptible属性是false时 会报错
+- parameters: 新的时间函数，但是为了避免，动画有跳动的现象，一般改变时间函数后，会有一定的过渡效果
+- durationFactor: 时间乘法因子，和原有的时间，相乘，获取最终的时间
+- 当这次动画结束后，才会重写animator的timing和duration属性</p>
+
+<h5>5.2 UIViewAnimating</h5>
+
+<h6>5.2.1 UIViewAnimating</h6>
+
+<ul>
+<li>inactive
+
+<ul>
+<li>构造方法创建的animator初始状态</li>
+</ul>
+</li>
+<li>active
+
+<ul>
+<li>当调用startAnimation() 或 pauseAnimation() 后，处于这个状态</li>
+</ul>
+</li>
+<li>stopped
+
+<ul>
+<li>动画自然结束，或者调用stopAnimation(_:)</li>
+<li>调用stopAnimation(_:),会让动画停留在当前值，而不是最终动画设定的值</li>
+</ul>
+
+
+<p>  <img src="https://github.com/engili/engili.github.io/raw/master/images/animation_states_2x.png" alt="" /></p></li>
+</ul>
+
+
+<h6>5.2.2 UIViewAnimatingPosition</h6>
+
+<ul>
+<li>end</li>
+<li>start</li>
+<li>current</li>
+</ul>
+
+
+<h6>5.2.3 动画状态改变</h6>
+
+<ul>
+<li>startAnimation()
+
+<ul>
+<li>开始一个动画，或者恢复一个暂停的动画</li>
+<li>stopped状态的动画，不能调用该方法</li>
+</ul>
+</li>
+<li>pauseAnimation()
+
+<ul>
+<li>暂停动画</li>
+<li>inactive动画调用后，转为active状态，并且动画处于暂停状态</li>
+</ul>
+</li>
+<li>stopAnimation(_:) 使动画，在当前状态停止</li>
+</ul>
+
+
+<p><code>func stopAnimation(_ withoutFinishing: Bool)</code></p>
+
+<ul>
+<li>withoutFinishing:
+
+<ul>
+<li>设置为true,animator进入inactive状态</li>
+<li>设置为false,animator进入stopped状态，之后可以进行一些其他操作，</li>
+</ul>
+</li>
+<li>finishAnimation(at:)使得动画结束，animator回到inactive</li>
+</ul>
+
+
+<h6>5.2.4 可交互动画</h6>
+
+<ul>
+<li>fractionComplete
+
+<ul>
+<li>动画完成百分比</li>
+<li>通过修改这个值，可以使animator进行到相应的过程</li>
+</ul>
+</li>
+</ul>
+
+
+<pre><code class="swift">@objc fileprivate func handleInterruptableGesture(_ gesture: UIPanGestureRecognizer) {
+    let offset = UIScreen.main.bounds.width - 100
+    switch gesture.state {
+    case .began:
+        if interruptableAnimator == nil {
+            interruptableAnimator = UIViewPropertyAnimator(duration: 3.0, curve: .easeOut, animations: {
+                self.interruptableAnimtionView.frame = self.interruptableAnimtionView.frame.offsetBy(dx: offset, dy: 0)
+            })
+        }
+        interruptableAnimator!.pauseAnimation()
+        progressWhenInterrupted = interruptableAnimator!.fractionComplete
+    case .changed:
+        let translation = gesture.translation(in: self.interruptableAnimtionView)
+        interruptableAnimator!.fractionComplete = (translation.x / offset) + progressWhenInterrupted
+
+    case .ended, .cancelled:
+        let timing = UICubicTimingParameters(animationCurve: .easeOut)
+        interruptableAnimator!.continueAnimation(withTimingParameters: timing, durationFactor: 0)
+    default:
+        break
+    }
+}
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[CoreData 学习笔记]]></title>
