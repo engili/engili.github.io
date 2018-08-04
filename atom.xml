@@ -4,7 +4,7 @@
   <title><![CDATA[Octopress Blog]]></title>
   <link href="http://engili.github.io/atom.xml" rel="self"/>
   <link href="http://engili.github.io/"/>
-  <updated>2018-08-04T17:30:34+08:00</updated>
+  <updated>2018-08-04T17:48:46+08:00</updated>
   <id>http://engili.github.io/</id>
   <author>
     <name><![CDATA[Your Name]]></name>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[UIKit Animations 学习笔记]]></title>
-    <link href="http://engili.github.io/blog/2017/08/20/uikit-animations-note/"/>
-    <updated>2017-08-20T18:41:18+08:00</updated>
-    <id>http://engili.github.io/blog/2017/08/20/uikit-animations-note</id>
+    <link href="http://engili.github.io/blog/2018/03/24/uikit-animations-note/"/>
+    <updated>2018-03-24T21:33:48+08:00</updated>
+    <id>http://engili.github.io/blog/2018/03/24/uikit-animations-note</id>
     <content type="html"><![CDATA[<!-- more -->
 
 
